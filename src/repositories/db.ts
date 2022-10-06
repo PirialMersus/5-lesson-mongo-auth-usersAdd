@@ -31,21 +31,19 @@ export interface IPasswordObjectType {
     passwords: IPassword[]
 }
 
-const uri = "mongodb+srv://mersus:genafe@bloggers.ypwqb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = "mongodb+srv://mersus:genafe@bloggers.ypwqb.mongodb.net/blogsPostsUsers?retryWrites=true&w=majority";
 
 export const client = new MongoClient(uri);
-export const blogsCollection = client.db().collection<IBlog>('bloggers')
+export const blogsCollection = client.db().collection<IBlog>('blogs')
 export const postsCollection = client.db().collection<IPost>('posts')
 export const usersCollection = client.db().collection<IUser>('users')
-export const passwordsCollection = client.db().collection<IPasswordObjectType>('passwords')
 
 
 export async function runDb() {
     try {
         await client.connect();
         // Establish and verify connection
-        await client.db("bloggers").command({ping: 1});
-        await client.db("newDbTest").command({ping: 1});
+        await client.db("blogsPostsUsers").command({ping: 1});
         console.log("Connected successfully to mongo server");
 
     } catch {

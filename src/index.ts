@@ -5,7 +5,6 @@ import {runDb} from './repositories/db'
 import {blogsRouter} from './routes/blogs-router'
 import {postsRouter} from './routes/posts-router'
 import {usersRouter} from "./routes/users-router"
-import {passwordsRouter} from "./routes/passwords-router";
 import {commonRepository} from "./repositories/common-repository";
 import {errorObj} from "./middlewares/input-validator-middleware";
 
@@ -24,7 +23,6 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/login', usersRouter)
-app.use('/passwords', passwordsRouter)
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     const isAllDeleted = await commonRepository.deleteAll();
