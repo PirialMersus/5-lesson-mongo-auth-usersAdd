@@ -11,8 +11,8 @@ export const serializedUsersSortBy = (value: string) => {
     switch (value) {
         case 'login':
             return 'login';
-        case 'id':
-            return 'id'
+        case '_id':
+            return '_id'
         case 'email':
             return 'email'
         default:

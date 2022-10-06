@@ -1,7 +1,7 @@
 import {IUser, usersCollection} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
-import {Filter} from "mongodb";
+import {Filter, WithId} from "mongodb";
 
 export const usersRepository = {
     async findUsers({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
@@ -13,7 +13,7 @@ export const usersRepository = {
         if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
         if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
         const count = await usersCollection.find(findObject).count()
-        const foundUsers: IUser[] = await usersCollection
+        const foundUsers: WithId<IUser>[] = await usersCollection
             .find(findObject, {projection: {_id: false}})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
@@ -38,5 +38,8 @@ export const usersRepository = {
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id})
         return result.deletedCount === 1
+    },
+    async findUser(login: string): Promise<IUser | null> {
+        return usersCollection.findOne({login})
     }
 }

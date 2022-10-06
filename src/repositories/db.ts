@@ -1,4 +1,4 @@
-import {MongoClient} from 'mongodb'
+import {MongoClient, ObjectId} from 'mongodb'
 
 export interface IBlog {
     name: string,
@@ -18,10 +18,12 @@ export interface IPost {
 }
 
 export interface IUser {
-    id: string,
+    _id: ObjectId,
     login: string,
     email: string,
-    createdAt: string
+    createdAt: string,
+    passwordSalt: string,
+    passwordHash: string
 }
 
 export interface IPassword {
