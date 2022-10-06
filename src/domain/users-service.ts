@@ -44,7 +44,7 @@ export const usersService = {
     async deleteUser(id: string): Promise<boolean> {
         return usersRepository.deleteUser(id)
     },
-    async checkCredentials(login: string, password): Promise<boolean> {
+    async checkCredentials(login: string, password: string): Promise<boolean> {
         const user = await usersRepository.findUser(login)
         if (!user) return false
         const passwordHash = await this._generateHash(password, user.passwordSalt)
