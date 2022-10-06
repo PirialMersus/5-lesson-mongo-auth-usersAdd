@@ -22,7 +22,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
-app.use('/login', usersRouter)
+app.use('/users', usersRouter)
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     const isAllDeleted = await commonRepository.deleteAll();
