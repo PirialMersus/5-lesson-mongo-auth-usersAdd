@@ -6,6 +6,7 @@ export interface IBlog {
     id: string,
     createdAt: string
 }
+
 export interface IPost {
     id: string,
     blogId: string,
@@ -15,17 +16,21 @@ export interface IPost {
     blogName: string,
     createdAt: string
 }
+
 export interface IUser {
-    id: number,
-    name: string,
-    password: string,
+    id: string,
+    login: string,
+    email: string,
+    createdAt: string
 }
+
 export interface IPassword {
     id: number,
     service: string,
     name: string,
     password: string,
 }
+
 export interface IPasswordObjectType {
     userId: number,
     passwords: IPassword[]

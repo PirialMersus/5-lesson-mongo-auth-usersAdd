@@ -1,21 +1,41 @@
-import {IPasswordObjectType, IUser} from "../repositories/db"
+import {IUser} from "../repositories/db"
 import {usersRepository} from "../repositories/users-repository";
+import {IReturnedFindObj} from "../repositories/blogs-repository";
+import {FindConditionsPostsObjType} from "./posts-service";
 
 export const usersService = {
-    async findUser(name: string, password: string): Promise<IUser | null> {
-        return usersRepository.findUser(name, password)
-    },
-    async createUser(name: string, password: string,): Promise<IUser | null> {
-        const userId: number = +(new Date())
-        const newUser: IUser = {
-            name,
-            password,
-            id: userId,
+    findUsers(pageNumber: number,
+              pageSize: number,
+              sortBy: keyof IUser,
+              sortDirection: string,
+              searchLoginTerm: string | null,
+              searchEmailTerm: string | null
+    ): Promise<IReturnedFindObj<IUser>> {
+        const skip = (pageNumber - 1) * pageSize
+        const findConditionsObj: FindConditionsPostsObjType = {
+            pageNumber,
+            pageSize,
+            skip,
         }
-        const initPasswordsObject: IPasswordObjectType = {
-            userId,
-            passwords: []
-        }
-        return usersRepository.createUser(newUser)
+        return usersRepository.findUsers(findConditionsObj,
+            sortBy,
+            sortDirection,
+            searchLoginTerm,
+            searchEmailTerm
+        )
     },
+
+    async createUser(login: string, password: string, email: string): Promise<IUser | null> {
+        const date = new Date()
+        const newBlogger: IUser = {
+            login,
+            email,
+            id: (+date).toString(),
+            createdAt: date.toISOString()
+        }
+        return usersRepository.createUser(newBlogger)
+    },
+    async deleteUser(id: string): Promise<boolean> {
+        return usersRepository.deleteUser(id)
+    }
 }

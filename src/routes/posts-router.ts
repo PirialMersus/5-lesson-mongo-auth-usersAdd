@@ -8,6 +8,8 @@ import {authMiddleware} from "../middlewares/auth-middleware";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 
 export interface IQuery {
+    searchLoginTerm: string,
+    searchEmailTerm: string,
     pageNumber: string
     pageSize: string
     sortBy: string,
