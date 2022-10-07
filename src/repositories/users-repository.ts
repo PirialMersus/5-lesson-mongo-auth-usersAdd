@@ -38,7 +38,7 @@ export const usersRepository = {
         })
     },
 
-    async createUser(newUser: IUser): Promise<IUser> {
+    async createUser(newUser: IUser): Promise<IUser | null> {
         await usersCollection.insertOne(newUser)
         return usersCollection.findOne({_id: newUser._id}, {
             projection: {
