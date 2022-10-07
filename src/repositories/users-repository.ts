@@ -1,4 +1,4 @@
-import {IUser, usersCollection} from "./db";
+import {blogsCollection, IUser, usersCollection} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {Filter, WithId} from "mongodb";
@@ -40,7 +40,13 @@ export const usersRepository = {
 
     async createUser(newUser: IUser): Promise<IUser> {
         await usersCollection.insertOne(newUser)
-        return newUser
+        return usersCollection.findOne({_id: newUser._id}, {
+            projection: {
+                _id: false,
+                passwordSalt: false,
+                passwordHash: false
+            }
+        })
     },
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id})
