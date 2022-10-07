@@ -13,6 +13,8 @@ export const serializedUsersSortBy = (value: string) => {
             return 'login';
         case '_id':
             return '_id'
+        case 'id':
+            return 'id'
         case 'email':
             return 'email'
         default:

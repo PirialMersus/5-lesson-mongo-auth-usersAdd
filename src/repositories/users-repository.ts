@@ -1,4 +1,4 @@
-import {blogsCollection, IUser, usersCollection} from "./db";
+import {IUser, usersCollection} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {Filter, WithId} from "mongodb";
