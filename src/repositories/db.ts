@@ -23,7 +23,8 @@ export interface IUser {
     email: string,
     createdAt: string,
     passwordSalt: string,
-    passwordHash: string
+    passwordHash: string,
+    id: string
 }
 
 export interface IPassword {
