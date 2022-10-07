@@ -4,19 +4,6 @@ import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator
 import {usersService} from "../domain/users-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 
-export const serializedUsersSortBy = (value: string) => {
-    switch (value) {
-        case 'login':
-            return 'login';
-        case 'id':
-            return 'id'
-        case 'email':
-            return 'email'
-        default:
-            return 'createdAt'
-    }
-}
-
 export const authRouter = Router({})
 
 authRouter

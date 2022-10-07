@@ -48,9 +48,10 @@ usersRouter.get('/', async (req: Request<{}, {}, {}, IQuery>, res: Response) => 
         body('email').trim().not().isEmpty().withMessage('enter input value in email field'),
         body('email').isLength({max: 100}).withMessage('email length should be less then 100'),
         body('email').custom((value, {req}) => {
-            const regExp = new RegExp("https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$");
-            if (!regExp.test(req.body.youtubeUrl)) {
-                throw new Error('enter correct value to email field');
+            const regExp = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+            console.log('req.body.email', req.body.email)
+            if (!regExp.test(req.body.email)) {
+                throw new Error('enter correct value to email field  123');
             }
             return true;
         }),
