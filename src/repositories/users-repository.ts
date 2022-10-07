@@ -14,7 +14,14 @@ export const usersRepository = {
         if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
         const count = await usersCollection.find(findObject).count()
         const foundUsers: WithId<IUser>[] = await usersCollection
-            .find(findObject, {projection: {_id: false}})
+            .find(findObject,
+                {
+                    projection: {
+                        _id: false,
+                        passwordSalt: false,
+                        passwordHash: false
+                    }
+                })
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
@@ -40,6 +47,12 @@ export const usersRepository = {
         return result.deletedCount === 1
     },
     async findUser(login: string): Promise<IUser | null> {
-        return usersCollection.findOne({login})
+        return usersCollection.findOne({login}, {
+            projection: {
+                _id: false,
+                passwordSalt: false,
+                passwordHash: false
+            }
+        })
     }
 }
