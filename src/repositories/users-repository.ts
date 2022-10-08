@@ -9,9 +9,14 @@ export const usersRepository = {
                     sortDirection: string,
                     searchLoginTerm: string | null,
                     searchEmailTerm: string | null): Promise<IReturnedFindObj<IUser>> {
-        const findObject: Filter<IUser> = {}
-        if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
-        if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
+        let findObject: any = {}
+        if (searchLoginTerm && searchEmailTerm) {
+            findObject = {$or: {email: searchEmailTerm, login: searchLoginTerm}}
+        } else {
+            if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
+            if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
+        }
+
         const count = await usersCollection.find(findObject).count()
         const foundUsers: WithId<IUser>[] = await usersCollection
             .find(findObject,
