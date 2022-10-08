@@ -24,6 +24,6 @@ authRouter
                     message: 'Cant create new user',
                     field: 'none',
                 }]
-                res.status(404).send(errorObj.errorsMessages)
+                res.status(404).send(errorObj.errorsMessages[0].message)
             }
         })
