@@ -25,8 +25,8 @@ export const serializedUsersSortBy = (value: string) => {
 export const usersRouter = Router({})
 
 usersRouter.get('/', async (req: Request<{}, {}, {}, IQuery>, res: Response) => {
-    const searchLoginTerm = req.query.searchLoginTerm ? req.query.searchLoginTerm : null
-    const searchEmailTerm = req.query.searchEmailTerm ? req.query.searchEmailTerm : null
+    const searchLoginTerm = req.query.searchLoginTerm ? req.query.searchLoginTerm : ''
+    const searchEmailTerm = req.query.searchEmailTerm ? req.query.searchEmailTerm : ''
     const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
     const pageSize = req.query.pageSize ? +req.query.pageSize : 10
     const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'

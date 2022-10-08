@@ -2,7 +2,6 @@ import {IUser, usersCollection} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {WithId} from "mongodb";
-import {log} from "util";
 
 export const usersRepository = {
     async findUsers({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
@@ -21,10 +20,10 @@ export const usersRepository = {
         findObject = {
             $or: [{
                 login: {
-                    $regex: searchLoginTerm,
+                    $regex: searchLoginTerm || '',
                     $options: "(?i)a(?-i)cme"
                 }
-            }, {email: {$regex: searchEmailTerm, $options: "(?i)a(?-i)cme"}}]
+            }, {email: {$regex: searchEmailTerm || '', $options: "(?i)a(?-i)cme"}}]
         }
         // } else {
         //     if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
