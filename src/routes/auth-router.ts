@@ -17,11 +17,12 @@ authRouter
         inputValidatorMiddleware,
         async (req: Request, res: Response) => {
             const newUser = await usersService.checkCredentials(req.body.login, req.body.password)
+
             if (newUser) {
                 res.status(201).send(newUser)
             } else {
                 errorObj.errorsMessages = [{
-                    message: 'Cant create new user',
+                    message: 'Cant login this user',
                     field: 'none',
                 }]
                 res.status(404).send(errorObj.errorsMessages[0].message)

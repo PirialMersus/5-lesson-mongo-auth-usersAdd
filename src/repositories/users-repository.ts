@@ -53,12 +53,13 @@ export const usersRepository = {
         return result.deletedCount === 1
     },
     async findUser(login: string): Promise<IUser | null> {
-        return usersCollection.findOne({login}, {
-            projection: {
-                _id: false,
-                passwordSalt: false,
-                passwordHash: false
-            }
+
+        return usersCollection.findOne({login: login}, {
+            // projection: {
+            //     _id: false,
+            //     passwordSalt: false,
+            //     passwordHash: false
+            // }
         })
     }
 }
