@@ -1,7 +1,8 @@
 import {IUser, usersCollection} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
-import {Filter, WithId} from "mongodb";
+import {WithId} from "mongodb";
+import {log} from "util";
 
 export const usersRepository = {
     async findUsers({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
@@ -10,18 +11,26 @@ export const usersRepository = {
                     searchLoginTerm: string | null,
                     searchEmailTerm: string | null): Promise<IReturnedFindObj<IUser>> {
         let findObject: any = {}
-        if (searchLoginTerm && searchEmailTerm) {
-            findObject = {
-                $or: [{
-                    email: {$regex: new RegExp(searchEmailTerm, "i")},
-                    login: {$regex: new RegExp(searchLoginTerm, "i")}
-                }]
-            }
-        } else {
-            if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
-            if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
+        // if (searchLoginTerm && searchEmailTerm) {
+        // findObject = {
+        //     $or: [{
+        //         email: {$regex: new RegExp(searchEmailTerm, "i")},
+        //         login: {$regex: new RegExp(searchLoginTerm, "i")}
+        //     }]
+        // }
+        findObject = {
+            $or: [{
+                login: {
+                    $regex: searchLoginTerm,
+                    $options: "(?i)a(?-i)cme"
+                }
+            }, {email: {$regex: searchEmailTerm, $options: "(?i)a(?-i)cme"}}]
         }
-
+        // } else {
+        //     if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
+        //     if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
+        // }
+        console.log('findObject', findObject)
         const count = await usersCollection.find(findObject).count()
         const foundUsers: WithId<IUser>[] = await usersCollection
             .find(findObject,
