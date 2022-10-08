@@ -11,7 +11,12 @@ export const usersRepository = {
                     searchEmailTerm: string | null): Promise<IReturnedFindObj<IUser>> {
         let findObject: any = {}
         if (searchLoginTerm && searchEmailTerm) {
-            findObject = {$or: {email: searchEmailTerm, login: searchLoginTerm}}
+            findObject = {
+                $or: [{
+                    email: {$regex: new RegExp(searchEmailTerm, "i")},
+                    login: {$regex: new RegExp(searchLoginTerm, "i")}
+                }]
+            }
         } else {
             if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
             if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
