@@ -10,7 +10,7 @@ export interface IBlog {
 export class Blog {
     createdAt: string
     id: string
-    static date
+    static date: Date
 
     constructor(public name: string,
                 public youtubeUrl: string,
