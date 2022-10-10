@@ -1,11 +1,12 @@
 import {Request, Response, Router} from 'express'
 import {body, param} from "express-validator";
 import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
-import {usersService} from "../domain/users-service";
+// import {usersService} from "../domain/users-service";
 import {IUser} from "../repositories/db"
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {IQuery} from "./posts-router";
 import {authMiddleware} from "../middlewares/auth-middleware";
+import {UsersService} from "../domain/users-service";
 
 export const serializedUsersSortBy = (value: string) => {
     switch (value) {
@@ -25,6 +26,12 @@ export const serializedUsersSortBy = (value: string) => {
 export const usersRouter = Router({})
 
 class UsersController {
+    private usersService: UsersService
+
+    constructor() {
+        this.usersService = new UsersService()
+    }
+
     async getUsers(req: Request<{}, {}, {}, IQuery>, res: Response) {
         const searchLoginTerm = req.query.searchLoginTerm ? req.query.searchLoginTerm : ''
         const searchEmailTerm = req.query.searchEmailTerm ? req.query.searchEmailTerm : ''
@@ -32,7 +39,7 @@ class UsersController {
         const pageSize = req.query.pageSize ? +req.query.pageSize : 10
         const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
         const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-        const users: IReturnedFindObj<IUser> = await usersService.findUsers(
+        const users: IReturnedFindObj<IUser> = await this.usersService.findUsers(
             pageNumber,
             pageSize,
             serializedUsersSortBy(sortBy),
@@ -44,7 +51,7 @@ class UsersController {
     }
 
     async createUser(req: Request, res: Response) {
-        const newUser = await usersService.createUser(req.body.login, req.body.password, req.body.email)
+        const newUser = await this.usersService.createUser(req.body.login, req.body.password, req.body.email)
         if (newUser) {
             res.status(201).send(newUser)
         } else {
@@ -58,7 +65,7 @@ class UsersController {
 
     async deleteUser(req: Request, res: Response) {
         const id = req.params.id;
-        const isDeleted = await usersService.deleteUser(id)
+        const isDeleted = await this.usersService.deleteUser(id)
 
         if (!isDeleted) {
             errorObj.errorsMessages = [{
@@ -74,7 +81,7 @@ class UsersController {
 
 const usersController = new UsersController()
 
-usersRouter.get('/', usersController.getUsers)
+usersRouter.get('/', usersController.getUsers.bind(usersController))
     .post('/',
         authMiddleware,
         body('login').trim().not().isEmpty().withMessage('enter input value in name field'),
@@ -93,9 +100,9 @@ usersRouter.get('/', usersController.getUsers)
         }),
 
         inputValidatorMiddleware,
-        usersController.createUser)
+        usersController.createUser.bind(usersController))
     .delete('/:id?',
         authMiddleware,
         param('id').not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
-        usersController.deleteUser)
+        usersController.deleteUser.bind(usersController))

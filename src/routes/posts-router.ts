@@ -2,10 +2,10 @@ import {Request, Response, Router} from 'express'
 import {body, param} from "express-validator";
 import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {IPost} from "../repositories/db";
-import {postsService} from "../domain/posts-service";
-import {blogsService} from "../domain/blogs-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
+import {blogsService} from "../domain/blogs-service";
+import {PostsService} from "../domain/posts-service";
 
 export interface IQuery {
     searchLoginTerm: string,
@@ -38,12 +38,16 @@ export const serializedPostsSortBy = (value: string) => {
 export const postsRouter = Router({})
 
 class PostsController {
+    private postsService: PostsService
+    constructor() {
+        this.postsService = new PostsService()
+    }
     async getPosts(req: Request<{}, {}, {}, IQuery>, res: Response) {
         const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
         const pageSize = req.query.pageSize ? +req.query.pageSize : 10
         const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
         const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-        const posts: IReturnedFindObj<IPost> = await postsService.findPosts(
+        const posts: IReturnedFindObj<IPost> = await this.postsService.findPosts(
             pageNumber,
             pageSize,
             serializedPostsSortBy(sortBy),
@@ -52,7 +56,7 @@ class PostsController {
     }
 
     async getPost(req: Request, res: Response) {
-        let post: IPost | null = await postsService.findPostById(req.params.postId)
+        let post: IPost | null = await this.postsService.findPostById(req.params.postId)
 
         if (post) {
             res.send(post)
@@ -63,7 +67,7 @@ class PostsController {
 
     async createPost(req: Request, res: Response) {
 
-        const newPost = await postsService.createPost(req.body.title,
+        const newPost = await this.postsService.createPost(req.body.title,
             req.body.shortDescription,
             req.body.content,
             req.body.blogId)
@@ -79,9 +83,9 @@ class PostsController {
 
         const id = req.params.id;
 
-        const isUpdated: boolean = await postsService.updatePost(id, title, shortDescription, content, blogId)
+        const isUpdated: boolean = await this.postsService.updatePost(id, title, shortDescription, content, blogId)
         if (isUpdated) {
-            const product = await postsService.findPostById(req.params.id)
+            const product = await this.postsService.findPostById(req.params.id)
             res.status(204).send(product)
         } else {
             errorObj.errorsMessages = [{
@@ -94,7 +98,7 @@ class PostsController {
 
     async deletePost(req: Request, res: Response) {
         const id = req.params.id;
-        const isDeleted = await postsService.deletePost(id)
+        const isDeleted = await this.postsService.deletePost(id)
 
         if (!isDeleted) {
             errorObj.errorsMessages = [{

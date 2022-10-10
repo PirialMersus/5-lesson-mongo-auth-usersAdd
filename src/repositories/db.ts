@@ -49,7 +49,6 @@ export class Post {
     }
 }
 
-
 export class User {
     _id: ObjectId
     createdAt: string
@@ -66,7 +65,6 @@ export class User {
         this.id = (+date).toString()
     }
 }
-
 
 export interface IUser {
     _id: ObjectId,

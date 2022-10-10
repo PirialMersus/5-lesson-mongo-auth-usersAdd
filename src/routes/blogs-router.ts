@@ -1,12 +1,12 @@
 import {Request, Response, Router} from 'express'
 import {body, param} from "express-validator";
-import {blogsService} from '../domain/blogs-service';
 import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {IBlog, IPost} from "../repositories/db";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {postsService} from "../domain/posts-service";
 import {serializedPostsSortBy} from "./posts-router";
+import {BlogsService} from "../domain/blogs-service";
 
 export const blogsRouter = Router({})
 
@@ -19,13 +19,19 @@ export type IRequest = {
 }
 
 class BlogsController {
+    private blogsService: BlogsService
+
+    constructor() {
+        this.blogsService = new BlogsService()
+    }
+
     async getBlogs(req: Request<{}, {}, {}, IRequest>, res: Response) {
         const name = req.query.searchNameTerm ? req.query.searchNameTerm : ''
         const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
         const pageSize = req.query.pageSize ? +req.query.pageSize : 10
         const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
         const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-        const response: IReturnedFindObj<IBlog> = await blogsService.findBlogs(name,
+        const response: IReturnedFindObj<IBlog> = await this.blogsService.findBlogs(name,
             pageNumber,
             pageSize,
             serializedBlogsSortBy(sortBy),
@@ -34,7 +40,7 @@ class BlogsController {
     }
 
     async getBlog(req: Request, res: Response) {
-        let blog: IBlog | null = await blogsService.findBlogById(req.params.blogId)
+        let blog: IBlog | null = await this.blogsService.findBlogById(req.params.blogId)
 
         if (blog) {
             res.send(blog)
@@ -49,7 +55,7 @@ class BlogsController {
         const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
         const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
         const blogId: string = req.params.blogId
-        const isBloggerPresent = await blogsService.findBlogById(blogId)
+        const isBloggerPresent = await this.blogsService.findBlogById(blogId)
         if (isBloggerPresent) {
             const response: IReturnedFindObj<IPost> = await postsService.findPostsByBlogId(
                 blogId,
@@ -66,7 +72,7 @@ class BlogsController {
 
     async createBlog(req: Request, res: Response) {
 
-        const newBlog = await blogsService.createBlog(req.body.name, req.body.youtubeUrl)
+        const newBlog = await this.blogsService.createBlog(req.body.name, req.body.youtubeUrl)
         res.status(201).send(newBlog)
 
     }
@@ -74,7 +80,7 @@ class BlogsController {
     async createPostForBlog(req: Request, res: Response) {
         const blogId: string = req.params.blogId
 
-        const isBloggerPresent = await blogsService.findBlogById(blogId)
+        const isBloggerPresent = await this.blogsService.findBlogById(blogId)
         if (isBloggerPresent) {
             const newPost = await postsService.createPost(req.body.title,
                 req.body.shortDescription,
@@ -90,9 +96,9 @@ class BlogsController {
         const name = req.body.name;
         const youtubeUrl = req.body.youtubeUrl;
 
-        const isUpdated: boolean = await blogsService.updateBlogger(req.params.id, name, youtubeUrl)
+        const isUpdated: boolean = await this.blogsService.updateBlogger(req.params.id, name, youtubeUrl)
         if (isUpdated) {
-            const blogger = await blogsService.findBlogById(req.params.id)
+            const blogger = await this.blogsService.findBlogById(req.params.id)
             res.status(204).send(blogger)
         } else {
             errorObj.errorsMessages = [{
@@ -105,7 +111,7 @@ class BlogsController {
 
     async deleteBlog(req: Request, res: Response) {
         const id = req.params.id;
-        const isDeleted = await blogsService.deleteBlogger(id)
+        const isDeleted = await this.blogsService.deleteBlogger(id)
 
         if (!isDeleted) {
             errorObj.errorsMessages = [{

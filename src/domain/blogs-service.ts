@@ -1,4 +1,4 @@
-import {blogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
+import {BlogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
 import {Blog, IBlog} from "../repositories/db"
 
 export interface IFindObj {
@@ -7,7 +7,14 @@ export interface IFindObj {
     pageSize: number,
     skip: number,
 }
+
 export class BlogsService {
+    private blogsRepository: BlogsRepository
+
+    constructor() {
+        this.blogsRepository = new BlogsRepository()
+    }
+
     findBlogs(name: string,
               pageNumber: number,
               pageSize: number,
@@ -21,25 +28,27 @@ export class BlogsService {
             skip,
         }
 
-        return blogsRepository.findBlogs(findConditionsObj, sortBy, sortDirection)
+        return this.blogsRepository.findBlogs(findConditionsObj, sortBy, sortDirection)
     }
 
     async findBlogById(id: string): Promise<IBlog | null> {
-        return blogsRepository.findBlogById(id)
+        return this.blogsRepository.findBlogById(id)
     }
+
     async createBlog(name: string, youtubeUrl: string): Promise<IBlog | null> {
         const date = new Date()
         const newBlog: Blog = new Blog(name, youtubeUrl, date)
         console.log('newBlog', newBlog)
 
-        return blogsRepository.createBlogger(newBlog)
+        return this.blogsRepository.createBlogger(newBlog)
     }
+
     async updateBlogger(id: string, name: string, youtubeUrl: string): Promise<boolean> {
-        return blogsRepository.updateBlog(id, name, youtubeUrl)
+        return this.blogsRepository.updateBlog(id, name, youtubeUrl)
     }
 
     async deleteBlogger(id: string): Promise<boolean> {
-        return blogsRepository.deleteBlog(id)
+        return this.blogsRepository.deleteBlog(id)
     }
 }
 

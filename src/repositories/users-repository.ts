@@ -3,7 +3,7 @@ import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {WithId} from "mongodb";
 
-class UsersRepository {
+export class UsersRepository {
     async findUsers({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
                     sortBy: keyof IUser,
                     sortDirection: string,

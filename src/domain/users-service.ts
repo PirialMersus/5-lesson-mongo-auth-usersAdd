@@ -1,10 +1,16 @@
 import {IUser, User} from "../repositories/db"
-import {usersRepository} from "../repositories/users-repository";
+import {UsersRepository} from "../repositories/users-repository";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {FindConditionsPostsObjType} from "./posts-service";
 import bcrypt from 'bcrypt'
 
-class UsersService {
+export class UsersService {
+    private usersRepository: UsersRepository
+
+    constructor() {
+        this.usersRepository = new UsersRepository()
+    }
+
     findUsers(pageNumber: number,
               pageSize: number,
               sortBy: keyof IUser,
@@ -18,7 +24,7 @@ class UsersService {
             pageSize,
             skip,
         }
-        return usersRepository.findUsers(findConditionsObj,
+        return this.usersRepository.findUsers(findConditionsObj,
             sortBy,
             sortDirection,
             searchLoginTerm,
@@ -32,21 +38,25 @@ class UsersService {
         const date = new Date()
         const newUser: User = new User(login, email, passwordSalt, passwordHash, date)
 
-        return usersRepository.createUser(newUser)
+        return this.usersRepository.createUser(newUser)
     }
+
     async deleteUser(id: string): Promise<boolean> {
-        return usersRepository.deleteUser(id)
+        return this.usersRepository.deleteUser(id)
     }
+
     async checkCredentials(login: string, password: string): Promise<boolean> {
-        const user = await usersRepository.findUser(login)
+        const user = await this.usersRepository.findUser(login)
         if (!user) return false
         const passwordHash = await this._generateHash(password, user.passwordSalt)
         return user.passwordHash === passwordHash;
 
     }
+
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash
     }
 }
+
 export const usersService = new UsersService()

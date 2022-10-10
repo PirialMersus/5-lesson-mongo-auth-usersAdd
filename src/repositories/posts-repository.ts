@@ -2,7 +2,7 @@ import {IBlog, IPost, postsCollection} from "./db";
 import {blogsRepository, IReturnedFindObj} from "./blogs-repository";
 import {FindConditionsBlogsObjType, FindConditionsPostsObjType} from "../domain/posts-service";
 
-class PostsRepository {
+export class PostsRepository {
     async findPosts({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
                     sortBy: keyof IPost,
                     sortDirection: string): Promise<IReturnedFindObj<IPost>> {

@@ -10,7 +10,7 @@ export interface IReturnedFindObj<T> {
     items: T[]
 }
 
-class BlogsRepository {
+export class BlogsRepository {
     async findBlogs({name, pageNumber, pageSize, skip}: IFindObj,
                     sortBy: keyof IBlog,
                     sortDirection: string): Promise<IReturnedFindObj<IBlog>> {
