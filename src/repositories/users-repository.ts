@@ -3,21 +3,13 @@ import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {WithId} from "mongodb";
 
-export const usersRepository = {
+class UsersRepository {
     async findUsers({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
                     sortBy: keyof IUser,
                     sortDirection: string,
                     searchLoginTerm: string | null,
                     searchEmailTerm: string | null): Promise<IReturnedFindObj<IUser>> {
-        let findObject: any = {}
-        // if (searchLoginTerm && searchEmailTerm) {
-        // findObject = {
-        //     $or: [{
-        //         email: {$regex: new RegExp(searchEmailTerm, "i")},
-        //         login: {$regex: new RegExp(searchLoginTerm, "i")}
-        //     }]
-        // }
-        findObject = {
+        const findObject = {
             $or: [{
                 login: {
                     $regex: searchLoginTerm || '',
@@ -25,10 +17,6 @@ export const usersRepository = {
                 }
             }, {email: {$regex: searchEmailTerm || '', $options: "(?i)a(?-i)cme"}}]
         }
-        // } else {
-        //     if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
-        //     if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
-        // }
         const count = await usersCollection.find(findObject).count()
         const foundUsers: WithId<IUser>[] = await usersCollection
             .find(findObject,
@@ -53,7 +41,7 @@ export const usersRepository = {
                 items: foundUsers
             })
         })
-    },
+    }
 
     async createUser(newUser: IUser): Promise<IUser | null> {
         await usersCollection.insertOne(newUser)
@@ -64,12 +52,16 @@ export const usersRepository = {
                 passwordHash: false
             }
         })
-    },
+    }
+
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id})
         return result.deletedCount === 1
-    },
+    }
+
     async findUser(login: string): Promise<IUser | null> {
         return usersCollection.findOne({login: login})
     }
 }
+
+export const usersRepository = new UsersRepository()

@@ -24,23 +24,57 @@ export const serializedUsersSortBy = (value: string) => {
 
 export const usersRouter = Router({})
 
-usersRouter.get('/', async (req: Request<{}, {}, {}, IQuery>, res: Response) => {
-    const searchLoginTerm = req.query.searchLoginTerm ? req.query.searchLoginTerm : ''
-    const searchEmailTerm = req.query.searchEmailTerm ? req.query.searchEmailTerm : ''
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10
-    const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-    const users: IReturnedFindObj<IUser> = await usersService.findUsers(
-        pageNumber,
-        pageSize,
-        serializedUsersSortBy(sortBy),
-        sortDirection,
-        searchLoginTerm,
-        searchEmailTerm
-    )
-    res.send(users);
-})
+class UsersController {
+    async getUsers(req: Request<{}, {}, {}, IQuery>, res: Response) {
+        const searchLoginTerm = req.query.searchLoginTerm ? req.query.searchLoginTerm : ''
+        const searchEmailTerm = req.query.searchEmailTerm ? req.query.searchEmailTerm : ''
+        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
+        const pageSize = req.query.pageSize ? +req.query.pageSize : 10
+        const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
+        const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
+        const users: IReturnedFindObj<IUser> = await usersService.findUsers(
+            pageNumber,
+            pageSize,
+            serializedUsersSortBy(sortBy),
+            sortDirection,
+            searchLoginTerm,
+            searchEmailTerm
+        )
+        res.send(users);
+    }
+
+    async createUser(req: Request, res: Response) {
+        const newUser = await usersService.createUser(req.body.login, req.body.password, req.body.email)
+        if (newUser) {
+            res.status(201).send(newUser)
+        } else {
+            errorObj.errorsMessages = [{
+                message: 'Cant create new user',
+                field: 'none',
+            }]
+            res.status(404).send(errorObj.errorsMessages)
+        }
+    }
+
+    async deleteUser(req: Request, res: Response) {
+        const id = req.params.id;
+        const isDeleted = await usersService.deleteUser(id)
+
+        if (!isDeleted) {
+            errorObj.errorsMessages = [{
+                message: 'Required user not found',
+                field: 'none',
+            }]
+            res.status(404).send(errorObj.errorsMessages[0].message)
+        } else {
+            res.send(204)
+        }
+    }
+}
+
+const usersController = new UsersController()
+
+usersRouter.get('/', usersController.getUsers)
     .post('/',
         authMiddleware,
         body('login').trim().not().isEmpty().withMessage('enter input value in name field'),
@@ -59,33 +93,9 @@ usersRouter.get('/', async (req: Request<{}, {}, {}, IQuery>, res: Response) => 
         }),
 
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-            const newUser = await usersService.createUser(req.body.login, req.body.password, req.body.email)
-            if (newUser) {
-                res.status(201).send(newUser)
-            } else {
-                errorObj.errorsMessages = [{
-                    message: 'Cant create new user',
-                    field: 'none',
-                }]
-                res.status(404).send(errorObj.errorsMessages)
-            }
-        })
+        usersController.createUser)
     .delete('/:id?',
         authMiddleware,
         param('id').not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-            const id = req.params.id;
-            const isDeleted = await usersService.deleteUser(id)
-
-            if (!isDeleted) {
-                errorObj.errorsMessages = [{
-                    message: 'Required user not found',
-                    field: 'none',
-                }]
-                res.status(404).send(errorObj.errorsMessages[0].message)
-            } else {
-                res.send(204)
-            }
-        })
+        usersController.deleteUser)

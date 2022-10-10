@@ -4,7 +4,7 @@ import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {FindConditionsPostsObjType} from "./posts-service";
 import bcrypt from 'bcrypt'
 
-export const usersService = {
+class UsersService {
     findUsers(pageNumber: number,
               pageSize: number,
               sortBy: keyof IUser,
@@ -24,7 +24,7 @@ export const usersService = {
             searchLoginTerm,
             searchEmailTerm
         )
-    },
+    }
 
     async createUser(login: string, password: string, email: string): Promise<IUser | null> {
         const passwordSalt = await bcrypt.genSalt(10)
@@ -33,19 +33,20 @@ export const usersService = {
         const newUser: User = new User(login, email, passwordSalt, passwordHash, date)
 
         return usersRepository.createUser(newUser)
-    },
+    }
     async deleteUser(id: string): Promise<boolean> {
         return usersRepository.deleteUser(id)
-    },
+    }
     async checkCredentials(login: string, password: string): Promise<boolean> {
         const user = await usersRepository.findUser(login)
         if (!user) return false
         const passwordHash = await this._generateHash(password, user.passwordSalt)
         return user.passwordHash === passwordHash;
 
-    },
+    }
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash
     }
 }
+export const usersService = new UsersService()
