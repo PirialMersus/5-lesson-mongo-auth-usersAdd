@@ -2,7 +2,7 @@ import {IBlog, IPost, postsCollection} from "./db";
 import {blogsRepository, IReturnedFindObj} from "./blogs-repository";
 import {FindConditionsBlogsObjType, FindConditionsPostsObjType} from "../domain/posts-service";
 
-export const postsRepository = {
+class PostsRepository {
     async findPosts({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
                     sortBy: keyof IPost,
                     sortDirection: string): Promise<IReturnedFindObj<IPost>> {
@@ -23,7 +23,8 @@ export const postsRepository = {
                 items: foundPosts
             })
         })
-    },
+    }
+
     async findPostById(id: string): Promise<IPost | null> {
         let post = postsCollection.findOne({id}, {projection: {_id: 0}})
         if (post) {
@@ -31,7 +32,8 @@ export const postsRepository = {
         } else {
             return null
         }
-    },
+    }
+
     async findPostsByBlogId({blogId, pageNumber, pageSize, skip}: FindConditionsBlogsObjType,
                             sortBy: keyof IPost,
                             sortDirection: string): Promise<IReturnedFindObj<IPost>> {
@@ -51,13 +53,15 @@ export const postsRepository = {
                 items: foundPosts
             })
         })
-    },
+    }
+
     // have to have return value type
     async createPost(newPost: IPost): Promise<IPost | null> {
 
         await postsCollection.insertOne(newPost)
         return postsCollection.findOne({id: newPost.id}, {projection: {_id: 0}})
-    },
+    }
+
     async updatePost(id: string,
                      title: string,
                      shortDescription: string,
@@ -76,10 +80,12 @@ export const postsRepository = {
             }
         })
         return result.matchedCount === 1
-    },
+    }
 
     async deletePost(id: string): Promise<boolean> {
         const result = await postsCollection.deleteOne({id})
         return result.deletedCount === 1
     }
 }
+
+export const postsRepository = new PostsRepository()

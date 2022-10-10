@@ -14,7 +14,7 @@ export type FindConditionsBlogsObjType = {
     skip: number
 }
 
-export const postsService = {
+class PostsService {
     findPosts(pageNumber: number,
               pageSize: number,
               sortBy: keyof IPost,
@@ -27,10 +27,12 @@ export const postsService = {
             skip,
         }
         return postsRepository.findPosts(findConditionsObj, sortBy, sortDirection)
-    },
+    }
+
     async findPostById(id: string): Promise<IPost | null> {
         return postsRepository.findPostById(id)
-    },
+    }
+
     async findPostsByBlogId(blogId: string,
                             pageNumber: number,
                             pageSize: number,
@@ -44,7 +46,8 @@ export const postsService = {
             skip,
         }
         return postsRepository.findPostsByBlogId(findConditionsObj, sortBy, sortDirection)
-    },
+    }
+
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<IPost | null> {
         const blog = await blogsRepository.findBlogById(blogId)
         const date = new Date()
@@ -56,16 +59,19 @@ export const postsService = {
             date);
 
         return postsRepository.createPost(newPost)
-    },
+    }
+
     async updatePost(id: string,
                      title: string,
                      shortDescription: string,
                      content: string,
                      blogId: string): Promise<boolean> {
         return postsRepository.updatePost(id, title, shortDescription, content, blogId)
-    },
+    }
 
     async deletePost(id: string): Promise<boolean> {
         return postsRepository.deletePost(id)
     }
 }
+
+export const postsService = new PostsService()
