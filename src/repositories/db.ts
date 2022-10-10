@@ -34,8 +34,8 @@ export class Post {
     createdAt: string
     id: string
     blogName: string
-    static date
-    static possibleBlogName
+    static date: Date
+    static possibleBlogName: string | undefined
 
     constructor(public title: string,
                 public shortDescription: string,
@@ -54,7 +54,7 @@ export class User {
     _id: ObjectId
     createdAt: string
     id: string
-    static date
+    static date: Date
 
     constructor(public login: string,
                 public email: string,
