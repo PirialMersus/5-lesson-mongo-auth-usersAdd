@@ -29,7 +29,6 @@ export const usersRepository = {
         //     if (searchLoginTerm) findObject.login = {$regex: new RegExp(searchLoginTerm, "i")}
         //     if (searchEmailTerm) findObject.email = {$regex: new RegExp(searchEmailTerm, "i")}
         // }
-        console.log('findObject', findObject)
         const count = await usersCollection.find(findObject).count()
         const foundUsers: WithId<IUser>[] = await usersCollection
             .find(findObject,
@@ -71,13 +70,6 @@ export const usersRepository = {
         return result.deletedCount === 1
     },
     async findUser(login: string): Promise<IUser | null> {
-
-        return usersCollection.findOne({login: login}, {
-            // projection: {
-            //     _id: false,
-            //     passwordSalt: false,
-            //     passwordHash: false
-            // }
-        })
+        return usersCollection.findOne({login: login})
     }
 }

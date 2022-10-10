@@ -6,6 +6,16 @@ export interface IBlog {
     id: string,
     createdAt: string
 }
+export class Blog {
+    createdAt: string
+    id: string
+    constructor(public name: string,
+                public youtubeUrl: string,
+                private date: Date) {
+        this.createdAt = date.toISOString()
+        this.id = (+date).toString()
+    }
+}
 
 export interface IPost {
     id: string,
@@ -16,6 +26,40 @@ export interface IPost {
     blogName: string,
     createdAt: string
 }
+
+export class Post {
+    createdAt: string
+    id: string
+    blogName: string
+    constructor(public title: string,
+                public shortDescription: string,
+                public content: string,
+                public blogId: string,
+                private possibleBlogName: string | undefined,
+                private date: Date) {
+        this.createdAt = date.toISOString()
+        this.id = (+date).toString()
+        this.blogName = possibleBlogName ? possibleBlogName : ''
+    }
+}
+
+
+export class User {
+    _id: ObjectId
+    createdAt: string
+    id: string
+
+    constructor(public login: string,
+                public email: string,
+                public passwordSalt: string,
+                public passwordHash: string,
+                private date: Date) {
+        this.createdAt = date.toISOString()
+        this._id = new ObjectId()
+        this.id = (+date).toString()
+    }
+}
+
 
 export interface IUser {
     _id: ObjectId,

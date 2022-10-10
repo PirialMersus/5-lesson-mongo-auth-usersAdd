@@ -1,9 +1,8 @@
-import {IUser} from "../repositories/db"
+import {IUser, User} from "../repositories/db"
 import {usersRepository} from "../repositories/users-repository";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {FindConditionsPostsObjType} from "./posts-service";
 import bcrypt from 'bcrypt'
-import {ObjectId} from 'mongodb'
 
 export const usersService = {
     findUsers(pageNumber: number,
@@ -31,15 +30,8 @@ export const usersService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
         const date = new Date()
-        const newUser: IUser = {
-            _id: new ObjectId(),
-            login,
-            email,
-            passwordHash,
-            passwordSalt,
-            createdAt: date.toISOString(),
-            id: (+date).toString()
-        }
+        const newUser: User = new User(login, email, passwordSalt, passwordHash, date)
+
         return usersRepository.createUser(newUser)
     },
     async deleteUser(id: string): Promise<boolean> {
@@ -56,5 +48,4 @@ export const usersService = {
         const hash = await bcrypt.hash(password, salt)
         return hash
     }
-
 }

@@ -10,15 +10,7 @@ export interface IReturnedFindObj<T> {
     items: T[]
 }
 
-// export interface IReturnedFindPostsObj {
-//     pagesCount: number,
-//     page: number,
-//     pageSize: number,
-//     totalCount: number,
-//     items: IPost[]
-// }
-
-export const blogsRepository = {
+class BlogsRepository {
     async findBlogs({name, pageNumber, pageSize, skip}: IFindObj,
                     sortBy: keyof IBlog,
                     sortDirection: string): Promise<IReturnedFindObj<IBlog>> {
@@ -40,7 +32,7 @@ export const blogsRepository = {
                 items: foundBloggers
             })
         })
-    },
+    }
 
     async findBlogById(id: string): Promise<IBlog | null> {
         const blog = blogsCollection.findOne({id}, {projection: {_id: 0}})
@@ -49,26 +41,25 @@ export const blogsRepository = {
         } else {
             return null
         }
-    },
+    }
     // have to have return value type
     async createBlogger(newBlog: IBlog): Promise<IBlog | null> {
 
         await blogsCollection.insertOne(newBlog)
         return blogsCollection.findOne({id: newBlog.id}, {projection: {_id: 0}})
-    },
+    }
     async updateBlog(id: string, name: string, youtubeUrl: string): Promise<boolean> {
         let result = await blogsCollection.updateOne({id}, {
             $set: {name, youtubeUrl}
         })
         return result.matchedCount === 1
-    },
+    }
 
     async deleteBlog(id: string): Promise<boolean> {
         const result = await blogsCollection.deleteOne({id})
         return result.deletedCount === 1
-    },
-
-    async getTotalCount(filter: Filter<IBlog>): Promise<number> {
-        return blogsCollection.countDocuments(filter)
     }
+
 }
+
+export const blogsRepository = new BlogsRepository()

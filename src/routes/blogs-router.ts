@@ -18,6 +18,108 @@ export type IRequest = {
     sortDirection: string,
 }
 
+class BlogsController {
+    async getBlogs(req: Request<{}, {}, {}, IRequest>, res: Response) {
+        const name = req.query.searchNameTerm ? req.query.searchNameTerm : ''
+        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
+        const pageSize = req.query.pageSize ? +req.query.pageSize : 10
+        const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
+        const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
+        const response: IReturnedFindObj<IBlog> = await blogsService.findBlogs(name,
+            pageNumber,
+            pageSize,
+            serializedBlogsSortBy(sortBy),
+            sortDirection)
+        res.send(response);
+    }
+
+    async getBlog(req: Request, res: Response) {
+        let blog: IBlog | null = await blogsService.findBlogById(req.params.blogId)
+
+        if (blog) {
+            res.send(blog)
+        } else {
+            res.send(404)
+        }
+    }
+
+    async getPostsOfBlog(req: Request<{ blogId: string }, {}, {}, IRequest>, res: Response) {
+        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
+        const pageSize = req.query.pageSize ? +req.query.pageSize : 10
+        const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
+        const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
+        const blogId: string = req.params.blogId
+        const isBloggerPresent = await blogsService.findBlogById(blogId)
+        if (isBloggerPresent) {
+            const response: IReturnedFindObj<IPost> = await postsService.findPostsByBlogId(
+                blogId,
+                pageNumber,
+                pageSize,
+                serializedPostsSortBy(sortBy),
+                sortDirection)
+            res.send(response);
+        } else {
+            res.send(404);
+        }
+
+    }
+
+    async createBlog(req: Request, res: Response) {
+
+        const newBlog = await blogsService.createBlog(req.body.name, req.body.youtubeUrl)
+        res.status(201).send(newBlog)
+
+    }
+
+    async createPostForBlog(req: Request, res: Response) {
+        const blogId: string = req.params.blogId
+
+        const isBloggerPresent = await blogsService.findBlogById(blogId)
+        if (isBloggerPresent) {
+            const newPost = await postsService.createPost(req.body.title,
+                req.body.shortDescription,
+                req.body.content,
+                blogId)
+            res.status(201).send(newPost)
+        } else {
+            res.send(404);
+        }
+    }
+
+    async updateBlog(req: Request, res: Response) {
+        const name = req.body.name;
+        const youtubeUrl = req.body.youtubeUrl;
+
+        const isUpdated: boolean = await blogsService.updateBlogger(req.params.id, name, youtubeUrl)
+        if (isUpdated) {
+            const blogger = await blogsService.findBlogById(req.params.id)
+            res.status(204).send(blogger)
+        } else {
+            errorObj.errorsMessages = [{
+                message: 'Required blogger not found',
+                field: 'none',
+            }]
+            res.status(404).send(errorObj)
+        }
+    }
+
+    async deleteBlog(req: Request, res: Response) {
+        const id = req.params.id;
+        const isDeleted = await blogsService.deleteBlogger(id)
+
+        if (!isDeleted) {
+            errorObj.errorsMessages = [{
+                message: 'Required blogger not found',
+                field: 'none',
+            }]
+            res.status(404).send(errorObj)
+        } else {
+            res.send(204)
+        }
+    }
+}
+
+
 const serializedBlogsSortBy = (value: string) => {
     switch (value) {
         case 'name':
@@ -30,63 +132,16 @@ const serializedBlogsSortBy = (value: string) => {
             return 'createdAt'
     }
 }
-
-blogsRouter.get('/', async (req: Request<{}, {}, {}, IRequest>, res: Response) => {
-    const name = req.query.searchNameTerm ? req.query.searchNameTerm : ''
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10
-    const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-    const response: IReturnedFindObj<IBlog> = await blogsService.findBlogs(name,
-        pageNumber,
-        pageSize,
-        serializedBlogsSortBy(sortBy),
-        sortDirection)
-    res.send(response);
-})
+const blogsController = new BlogsController()
+blogsRouter.get('/', blogsController.getBlogs)
     .get('/:blogId?',
         param('blogId').not().isEmpty().withMessage('enter blogId value in params'),
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-            let blog: IBlog | null = await blogsService.findBlogById(req.params.blogId)
-
-            if (blog) {
-                res.send(blog)
-            } else {
-                res.send(404)
-            }
-        })
+        blogsController.getBlog)
     .get('/:blogId/posts',
-
         param('blogId').not().isEmpty().withMessage('enter blogId value in params'),
-        // param('blogId').custom(async (value, {}) => {
-        //     const isBloggerPresent = await blogsService.findBlogById(value)
-        //     if (!isBloggerPresent) {
-        //         throw new Error('incorrect blogId');
-        //     }
-        //     return true;
-        // }),
         inputValidatorMiddleware,
-        async (req: Request<{ blogId: string }, {}, {}, IRequest>, res: Response) => {
-            const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
-            const pageSize = req.query.pageSize ? +req.query.pageSize : 10
-            const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
-            const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-            const blogId: string = req.params.blogId
-            const isBloggerPresent = await blogsService.findBlogById(blogId)
-            if (isBloggerPresent) {
-                const response: IReturnedFindObj<IPost> = await postsService.findPostsByBlogId(
-                    blogId,
-                    pageNumber,
-                    pageSize,
-                    serializedPostsSortBy(sortBy),
-                    sortDirection)
-                res.send(response);
-            } else {
-                res.send(404);
-            }
-
-        })
+        blogsController.getPostsOfBlog)
     .post('/',
         authMiddleware,
         body('youtubeUrl').trim().not().isEmpty().withMessage('enter input value in youtubeUrl field'),
@@ -101,13 +156,7 @@ blogsRouter.get('/', async (req: Request<{}, {}, {}, IRequest>, res: Response) =
             return true;
         }),
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-
-            const newBlog = await blogsService.createBlog(req.body.name, req.body.youtubeUrl)
-
-            res.status(201).send(newBlog)
-
-        })
+        blogsController.createBlog)
     .post('/:blogId/posts',
         authMiddleware,
         param('blogId').trim().not().isEmpty().withMessage('enter blogId value in params'),
@@ -118,30 +167,9 @@ blogsRouter.get('/', async (req: Request<{}, {}, {}, IRequest>, res: Response) =
         body('content').isLength({max: 1000}).withMessage('content length should be less then 1000'),
         body('shortDescription').isLength({max: 100}).withMessage('shortDescription length should be less then 100'),
         param('blogId').isLength({max: 1000}).withMessage('blogId length should be less then 1000'),
-        // param('blogId').custom(async (value, {}) => {
-        //     const isBloggerPresent = await blogsService.findBlogById(value)
-        //     if (!isBloggerPresent) {
-        //         throw new Error('incorrect blogId');
-        //     }
-        //     return true;
-        // }),
+
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-            const blogId: string = req.params.blogId
-
-
-            const isBloggerPresent = await blogsService.findBlogById(blogId)
-            if (isBloggerPresent) {
-                const newPost = await postsService.createPost(req.body.title,
-                    req.body.shortDescription,
-                    req.body.content,
-                    blogId)
-                res.status(201).send(newPost)
-            } else {
-                res.send(404);
-            }
-
-        })
+        blogsController.createPostForBlog)
     .put('/:id?',
         authMiddleware,
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
@@ -157,37 +185,9 @@ blogsRouter.get('/', async (req: Request<{}, {}, {}, IRequest>, res: Response) =
             return true;
         }),
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-            const name = req.body.name;
-            const youtubeUrl = req.body.youtubeUrl;
-
-            const isUpdated: boolean = await blogsService.updateBlogger(req.params.id, name, youtubeUrl)
-            if (isUpdated) {
-                const blogger = await blogsService.findBlogById(req.params.id)
-                res.status(204).send(blogger)
-            } else {
-                errorObj.errorsMessages = [{
-                    message: 'Required blogger not found',
-                    field: 'none',
-                }]
-                res.status(404).send(errorObj)
-            }
-        })
+        blogsController.updateBlog)
     .delete('/:id?',
         authMiddleware,
         param('id').not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-            const id = req.params.id;
-            const isDeleted = await blogsService.deleteBlogger(id)
-
-            if (!isDeleted) {
-                errorObj.errorsMessages = [{
-                    message: 'Required blogger not found',
-                    field: 'none',
-                }]
-                res.status(404).send(errorObj)
-            } else {
-                res.send(204)
-            }
-        })
+        blogsController.deleteBlog)

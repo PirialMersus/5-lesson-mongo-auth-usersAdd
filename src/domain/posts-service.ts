@@ -1,5 +1,5 @@
 import {blogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
-import {IPost} from "../repositories/db"
+import {IPost, Post} from "../repositories/db"
 import {postsRepository} from "../repositories/posts-repository"
 
 export type FindConditionsPostsObjType = {
@@ -48,15 +48,13 @@ export const postsService = {
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<IPost | null> {
         const blog = await blogsRepository.findBlogById(blogId)
         const date = new Date()
-        const newPost: IPost = {
-            title,
+        const newPost: IPost = new Post(title,
             shortDescription,
             content,
             blogId,
-            blogName: blog ? blog.name : 'unknown',
-            id: (+date).toString(),
-            createdAt: date.toISOString()
-        }
+            blog?.name,
+            date);
+
         return postsRepository.createPost(newPost)
     },
     async updatePost(id: string,
