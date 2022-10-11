@@ -62,6 +62,7 @@ class PostsController {
     async findPostById(id: string) {
         return await this.postsService.findPostById(id)
     }
+
     async findBlogById(id: string) {
         return await this.blogsService.findBlogById(id)
     }

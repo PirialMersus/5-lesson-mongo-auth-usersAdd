@@ -1,9 +1,32 @@
 import {Request, Response, Router} from 'express'
 import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
-import {usersService} from "../domain/users-service";
+import {UsersService} from "../domain/users-service";
 
 export const authRouter = Router({})
 
+class AuthController {
+    private usersService: UsersService
+
+    constructor() {
+        this.usersService = new UsersService()
+    }
+
+    async checkCredentials(req: Request, res: Response) {
+        const user = await usersService.checkCredentials(req.body.login, req.body.password)
+
+        if (user) {
+            res.status(204).send(user)
+        } else {
+            errorObj.errorsMessages = [{
+                message: 'Cant login this user',
+                field: 'none',
+            }]
+            res.status(401).send(errorObj.errorsMessages[0].message)
+        }
+    }
+}
+
+const authController = new AuthController();
 authRouter
     .post('/login',
         // authMiddleware,
@@ -13,16 +36,4 @@ authRouter
         // body('password').isLength({min: 6, max: 20}).withMessage('password: min: 6, max: 20'),
 
         inputValidatorMiddleware,
-        async (req: Request, res: Response) => {
-            const user = await usersService.checkCredentials(req.body.login, req.body.password)
-
-            if (user) {
-                res.status(204).send(user)
-            } else {
-                errorObj.errorsMessages = [{
-                    message: 'Cant login this user',
-                    field: 'none',
-                }]
-                res.status(401).send(errorObj.errorsMessages[0].message)
-            }
-        })
+        authController.checkCredentials.bind(authController))
