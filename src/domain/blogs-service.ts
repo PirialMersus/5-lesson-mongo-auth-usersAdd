@@ -21,7 +21,6 @@ export class BlogsService {
               sortBy: keyof IBlog,
               sortDirection: string): Promise<IReturnedFindObj<IBlog>> {
         const skip = (pageNumber - 1) * pageSize
-        console.log('findBlogs')
         const findConditionsObj: IFindObj = {
             name,
             pageNumber,
@@ -39,7 +38,6 @@ export class BlogsService {
     async createBlog(name: string, youtubeUrl: string): Promise<IBlog | null> {
         const date = new Date()
         const newBlog: Blog = new Blog(name, youtubeUrl, date)
-        console.log('newBlog', newBlog)
 
         return this.blogsRepository.createBlogger(newBlog)
     }
