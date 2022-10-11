@@ -5,9 +5,10 @@ import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {IPost} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
 import {IQuery, serializedPostsSortBy} from "../routes/posts-router";
+import {blogsService} from "../compositions/composition-blogs";
 
 export class PostsController {
-    constructor(protected postsService: PostsService, protected blogsService: BlogsService) {
+    constructor(protected postsService: PostsService) {
     }
 
     async getPosts(req: Request<{}, {}, {}, IQuery>, res: Response) {
@@ -28,7 +29,8 @@ export class PostsController {
     }
 
     async findBlogById(id: string) {
-        return await this.blogsService.findBlogById(id)
+
+        return await blogsService.findBlogById(id)
     }
 
     async getPost(req: Request, res: Response) {

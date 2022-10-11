@@ -50,7 +50,9 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
         body('shortDescription').isLength({max: 100}).withMessage('shortDescription length should be less then 100'),
         body('blogId').isLength({max: 1000}).withMessage('blogId length should be less then 1000'),
         body('blogId').custom(async (value, {}) => {
+            console.log('isBloggerPresent')
             const isBloggerPresent = await postsController.findBlogById(value)
+
             if (!isBloggerPresent) {
                 throw new Error('incorrect blogId');
             }
