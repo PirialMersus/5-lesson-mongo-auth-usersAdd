@@ -1,14 +1,12 @@
 import {Request, Response, Router} from 'express'
 import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {UsersService} from "../domain/users-service";
+import {usersService} from "../compositions/composition-users.ts";
 
 export const authRouter = Router({})
 
 class AuthController {
-    private usersService: UsersService
-
-    constructor() {
-        this.usersService = new UsersService()
+    constructor(protected usersService: UsersService) {
     }
 
     async checkCredentials(req: Request, res: Response) {
@@ -26,7 +24,7 @@ class AuthController {
     }
 }
 
-const authController = new AuthController();
+const authController = new AuthController(usersService);
 authRouter
     .post('/login',
         // authMiddleware,

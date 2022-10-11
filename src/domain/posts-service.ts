@@ -15,10 +15,10 @@ export type FindConditionsBlogsObjType = {
 }
 
 export class PostsService {
-    private postsRepository: PostsRepository
-    constructor() {
-        this.postsRepository = new PostsRepository
+
+    constructor(protected postsRepository: PostsRepository) {
     }
+
     findPosts(pageNumber: number,
               pageSize: number,
               sortBy: keyof IPost,
@@ -77,5 +77,3 @@ export class PostsService {
         return this.postsRepository.deletePost(id)
     }
 }
-
-export const postsService = new PostsService()

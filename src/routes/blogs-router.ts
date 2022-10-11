@@ -1,12 +1,8 @@
-import {Request, Response, Router} from 'express'
+import {Router} from 'express'
 import {body, param} from "express-validator";
-import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
-import {IBlog, IPost} from "../repositories/db";
-import {IReturnedFindObj} from "../repositories/blogs-repository";
+import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {postsService} from "../domain/posts-service";
-import {serializedPostsSortBy} from "./posts-router";
-import {BlogsService} from "../domain/blogs-service";
+import {blogsController} from "../compositions/composition-blogs";
 
 export const blogsRouter = Router({})
 
@@ -18,126 +14,6 @@ export type IRequest = {
     sortDirection: string,
 }
 
-class BlogsController {
-    private blogsService: BlogsService
-
-    constructor() {
-        this.blogsService = new BlogsService()
-    }
-
-    async getBlogs(req: Request<{}, {}, {}, IRequest>, res: Response) {
-        const name = req.query.searchNameTerm ? req.query.searchNameTerm : ''
-        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
-        const pageSize = req.query.pageSize ? +req.query.pageSize : 10
-        const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
-        const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-        const response: IReturnedFindObj<IBlog> = await this.blogsService.findBlogs(name,
-            pageNumber,
-            pageSize,
-            serializedBlogsSortBy(sortBy),
-            sortDirection)
-        res.send(response);
-    }
-
-    async getBlog(req: Request, res: Response) {
-        let blog: IBlog | null = await this.blogsService.findBlogById(req.params.blogId)
-
-        if (blog) {
-            res.send(blog)
-        } else {
-            res.send(404)
-        }
-    }
-
-    async getPostsOfBlog(req: Request<{ blogId: string }, {}, {}, IRequest>, res: Response) {
-        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
-        const pageSize = req.query.pageSize ? +req.query.pageSize : 10
-        const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
-        const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
-        const blogId: string = req.params.blogId
-        const isBloggerPresent = await this.blogsService.findBlogById(blogId)
-        if (isBloggerPresent) {
-            const response: IReturnedFindObj<IPost> = await postsService.findPostsByBlogId(
-                blogId,
-                pageNumber,
-                pageSize,
-                serializedPostsSortBy(sortBy),
-                sortDirection)
-            res.send(response);
-        } else {
-            res.send(404);
-        }
-
-    }
-
-    async createBlog(req: Request, res: Response) {
-        const newBlog = await this.blogsService.createBlog(req.body.name, req.body.youtubeUrl)
-        res.status(201).send(newBlog)
-
-    }
-
-    async createPostForBlog(req: Request, res: Response) {
-        const blogId: string = req.params.blogId
-
-        const isBloggerPresent = await this.blogsService.findBlogById(blogId)
-        if (isBloggerPresent) {
-            const newPost = await postsService.createPost(req.body.title,
-                req.body.shortDescription,
-                req.body.content,
-                blogId)
-            res.status(201).send(newPost)
-        } else {
-            res.send(404);
-        }
-    }
-
-    async updateBlog(req: Request, res: Response) {
-        const name = req.body.name;
-        const youtubeUrl = req.body.youtubeUrl;
-
-        const isUpdated: boolean = await this.blogsService.updateBlogger(req.params.id, name, youtubeUrl)
-        if (isUpdated) {
-            const blogger = await this.blogsService.findBlogById(req.params.id)
-            res.status(204).send(blogger)
-        } else {
-            errorObj.errorsMessages = [{
-                message: 'Required blogger not found',
-                field: 'none',
-            }]
-            res.status(404).send(errorObj)
-        }
-    }
-
-    async deleteBlog(req: Request, res: Response) {
-        const id = req.params.id;
-        const isDeleted = await this.blogsService.deleteBlogger(id)
-
-        if (!isDeleted) {
-            errorObj.errorsMessages = [{
-                message: 'Required blogger not found',
-                field: 'none',
-            }]
-            res.status(404).send(errorObj)
-        } else {
-            res.send(204)
-        }
-    }
-}
-
-
-const serializedBlogsSortBy = (value: string) => {
-    switch (value) {
-        case 'name':
-            return 'name';
-        case 'youtubeUrl':
-            return 'youtubeUrl'
-        case 'id':
-            return 'id'
-        default:
-            return 'createdAt'
-    }
-}
-export const blogsController = new BlogsController()
 blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
     .get('/:blogId?',
         param('blogId').not().isEmpty().withMessage('enter blogId value in params'),

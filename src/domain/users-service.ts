@@ -5,10 +5,9 @@ import {FindConditionsPostsObjType} from "./posts-service";
 import bcrypt from 'bcrypt'
 
 export class UsersService {
-    private usersRepository: UsersRepository
 
-    constructor() {
-        this.usersRepository = new UsersRepository()
+
+    constructor(protected usersRepository: UsersRepository) {
     }
 
     findUsers(pageNumber: number,
@@ -54,8 +53,7 @@ export class UsersService {
     }
 
     async _generateHash(password: string, salt: string) {
-        const hash = await bcrypt.hash(password, salt)
-        return hash
+        return await bcrypt.hash(password, salt)
     }
 }
 

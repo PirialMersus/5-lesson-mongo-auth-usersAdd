@@ -9,10 +9,7 @@ export interface IFindObj {
 }
 
 export class BlogsService {
-    private blogsRepository: BlogsRepository
-
-    constructor() {
-        this.blogsRepository = new BlogsRepository()
+    constructor(protected blogsRepository: BlogsRepository) {
     }
 
     findBlogs(name: string,
