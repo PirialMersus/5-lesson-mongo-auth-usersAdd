@@ -129,7 +129,7 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
     .get('/:postId?',
         param('postId').trim().not().isEmpty().withMessage('enter postId value in params'),
         inputValidatorMiddleware,
-        postsController.getPost)
+        postsController.getPost.bind(postsController))
     .post('/',
         authMiddleware,
         body('title').trim().not().isEmpty().withMessage('enter input value in title field'),
@@ -148,7 +148,7 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
             return true;
         }),
         inputValidatorMiddleware,
-        postsController.createPost)
+        postsController.createPost.bind(postsController))
     .put('/:id?',
         authMiddleware,
         body('blogId').custom(async (value, {}) => {
@@ -168,9 +168,9 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
         body('blogId').isLength({max: 1000}).withMessage('blogId length should be less then 1000'),
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
-        postsController.updatePost)
+        postsController.updatePost.bind(postsController))
     .delete('/:id?',
         authMiddleware,
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
-        postsController.deletePost)
+        postsController.deletePost.bind(postsController))
