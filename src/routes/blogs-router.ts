@@ -138,16 +138,16 @@ const serializedBlogsSortBy = (value: string) => {
             return 'createdAt'
     }
 }
-const blogsController = new BlogsController()
-blogsRouter.get('/', blogsController.getBlogs)
+export const blogsController = new BlogsController()
+blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
     .get('/:blogId?',
         param('blogId').not().isEmpty().withMessage('enter blogId value in params'),
         inputValidatorMiddleware,
-        blogsController.getBlog)
+        blogsController.getBlog.bind(blogsController))
     .get('/:blogId/posts',
         param('blogId').not().isEmpty().withMessage('enter blogId value in params'),
         inputValidatorMiddleware,
-        blogsController.getPostsOfBlog)
+        blogsController.getPostsOfBlog.bind(blogsController))
     .post('/',
         authMiddleware,
         body('youtubeUrl').trim().not().isEmpty().withMessage('enter input value in youtubeUrl field'),
@@ -162,7 +162,7 @@ blogsRouter.get('/', blogsController.getBlogs)
             return true;
         }),
         inputValidatorMiddleware,
-        blogsController.createBlog)
+        blogsController.createBlog.bind(blogsController))
     .post('/:blogId/posts',
         authMiddleware,
         param('blogId').trim().not().isEmpty().withMessage('enter blogId value in params'),
@@ -175,7 +175,7 @@ blogsRouter.get('/', blogsController.getBlogs)
         param('blogId').isLength({max: 1000}).withMessage('blogId length should be less then 1000'),
 
         inputValidatorMiddleware,
-        blogsController.createPostForBlog)
+        blogsController.createPostForBlog.bind(blogsController))
     .put('/:id?',
         authMiddleware,
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
@@ -191,9 +191,9 @@ blogsRouter.get('/', blogsController.getBlogs)
             return true;
         }),
         inputValidatorMiddleware,
-        blogsController.updateBlog)
+        blogsController.updateBlog.bind(blogsController))
     .delete('/:id?',
         authMiddleware,
         param('id').not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
-        blogsController.deleteBlog)
+        blogsController.deleteBlog.bind(blogsController))

@@ -4,8 +4,8 @@ import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator
 import {IPost} from "../repositories/db";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
-import {blogsService} from "../domain/blogs-service";
 import {PostsService} from "../domain/posts-service";
+import {BlogsService} from "../domain/blogs-service";
 
 export interface IQuery {
     searchLoginTerm: string,
@@ -39,9 +39,13 @@ export const postsRouter = Router({})
 
 class PostsController {
     private postsService: PostsService
+    private blogsService: BlogsService
+
     constructor() {
         this.postsService = new PostsService()
+        this.blogsService = new BlogsService()
     }
+
     async getPosts(req: Request<{}, {}, {}, IQuery>, res: Response) {
         const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
         const pageSize = req.query.pageSize ? +req.query.pageSize : 10
@@ -53,6 +57,13 @@ class PostsController {
             serializedPostsSortBy(sortBy),
             sortDirection)
         res.send(posts);
+    }
+
+    async findPostById(id: string) {
+        return await this.postsService.findPostById(id)
+    }
+    async findBlogById(id: string) {
+        return await this.blogsService.findBlogById(id)
     }
 
     async getPost(req: Request, res: Response) {
@@ -114,7 +125,7 @@ class PostsController {
 
 const postsController = new PostsController()
 
-postsRouter.get('/', postsController.getPosts)
+postsRouter.get('/', postsController.getPosts.bind(postsController))
     .get('/:postId?',
         param('postId').trim().not().isEmpty().withMessage('enter postId value in params'),
         inputValidatorMiddleware,
@@ -130,7 +141,7 @@ postsRouter.get('/', postsController.getPosts)
         body('shortDescription').isLength({max: 100}).withMessage('shortDescription length should be less then 100'),
         body('blogId').isLength({max: 1000}).withMessage('blogId length should be less then 1000'),
         body('blogId').custom(async (value, {}) => {
-            const isBloggerPresent = await blogsService.findBlogById(value)
+            const isBloggerPresent = postsController.findPostById(value)
             if (!isBloggerPresent) {
                 throw new Error('incorrect blogId');
             }
@@ -141,7 +152,7 @@ postsRouter.get('/', postsController.getPosts)
     .put('/:id?',
         authMiddleware,
         body('blogId').custom(async (value, {}) => {
-            const isBloggerPresent = await blogsService.findBlogById(value)
+            const isBloggerPresent = postsController.findBlogById(value)
             if (!isBloggerPresent) {
                 throw new Error('incorrect blogId id');
             }

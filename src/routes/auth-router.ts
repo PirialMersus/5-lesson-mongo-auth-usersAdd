@@ -1,8 +1,6 @@
 import {Request, Response, Router} from 'express'
-import {body} from "express-validator";
 import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {usersService} from "../domain/users-service";
-import {authMiddleware} from "../middlewares/auth-middleware";
 
 export const authRouter = Router({})
 
@@ -16,10 +14,10 @@ authRouter
 
         inputValidatorMiddleware,
         async (req: Request, res: Response) => {
-            const newUser = await usersService.checkCredentials(req.body.login, req.body.password)
+            const user = await usersService.checkCredentials(req.body.login, req.body.password)
 
-            if (newUser) {
-                res.status(204).send(newUser)
+            if (user) {
+                res.status(204).send(user)
             } else {
                 errorObj.errorsMessages = [{
                     message: 'Cant login this user',

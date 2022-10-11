@@ -21,6 +21,7 @@ export class BlogsService {
               sortBy: keyof IBlog,
               sortDirection: string): Promise<IReturnedFindObj<IBlog>> {
         const skip = (pageNumber - 1) * pageSize
+        console.log('findBlogs')
         const findConditionsObj: IFindObj = {
             name,
             pageNumber,
@@ -52,4 +53,4 @@ export class BlogsService {
     }
 }
 
-export const blogsService = new BlogsService()
+// export const blogsService = new BlogsService()
