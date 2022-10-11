@@ -12,7 +12,7 @@ class AuthController {
     }
 
     async checkCredentials(req: Request, res: Response) {
-        const user = await usersService.checkCredentials(req.body.login, req.body.password)
+        const user = await this.usersService.checkCredentials(req.body.login, req.body.password)
 
         if (user) {
             res.status(204).send(user)
