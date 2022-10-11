@@ -92,7 +92,6 @@ usersRouter.get('/', usersController.getUsers.bind(usersController))
         body('email').isLength({max: 100}).withMessage('email length should be less then 100'),
         body('email').custom((value, {req}) => {
             const regExp = new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
-            console.log('req.body.email', req.body.email)
             if (!regExp.test(req.body.email)) {
                 throw new Error('enter correct value to email field  123');
             }

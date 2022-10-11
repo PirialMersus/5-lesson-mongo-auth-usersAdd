@@ -71,7 +71,6 @@ class BlogsController {
     }
 
     async createBlog(req: Request, res: Response) {
-
         const newBlog = await this.blogsService.createBlog(req.body.name, req.body.youtubeUrl)
         res.status(201).send(newBlog)
 
