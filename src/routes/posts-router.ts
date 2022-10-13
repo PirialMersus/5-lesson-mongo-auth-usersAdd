@@ -2,37 +2,11 @@ import {Router} from 'express'
 import {body, param} from "express-validator";
 import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {postsController} from "../compositions/composition-posts";
-
-export interface IQuery {
-    searchLoginTerm: string,
-    searchEmailTerm: string,
-    pageNumber: string
-    pageSize: string
-    sortBy: string,
-    sortDirection: string,
-}
-
-export const serializedPostsSortBy = (value: string) => {
-    switch (value) {
-        case 'blogId':
-            return 'blogId';
-        case 'title':
-            return 'title';
-        case 'shortDescription':
-            return 'shortDescription'
-        case 'id':
-            return 'id'
-        case 'content':
-            return 'content'
-        case 'blogName':
-            return 'blogName'
-        default:
-            return 'createdAt'
-    }
-}
+import {PostsController} from "../controllers/posts-controller";
+import {container} from "../compositions/composition-root";
 
 export const postsRouter = Router({})
+const postsController = container.resolve(PostsController);
 
 postsRouter.get('/', postsController.getPosts.bind(postsController))
     .get('/:postId?',
@@ -50,7 +24,6 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
         body('shortDescription').isLength({max: 100}).withMessage('shortDescription length should be less then 100'),
         body('blogId').isLength({max: 1000}).withMessage('blogId length should be less then 1000'),
         body('blogId').custom(async (value, {}) => {
-            console.log('isBloggerPresent')
             const isBloggerPresent = await postsController.findBlogById(value)
 
             if (!isBloggerPresent) {

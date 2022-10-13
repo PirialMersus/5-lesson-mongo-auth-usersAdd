@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express, {Request, Response} from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
@@ -8,7 +9,6 @@ import {usersRouter} from "./routes/users-router"
 import {commonRepository} from "./repositories/common-repository";
 import {errorObj} from "./middlewares/input-validator-middleware";
 import {authRouter} from "./routes/auth-router";
-
 const app = express()
 
 const jsonBodyMiddleware = bodyParser.json()

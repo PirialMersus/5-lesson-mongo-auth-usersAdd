@@ -1,33 +1,12 @@
-import "reflect-metadata";
-import {Request, Response, Router} from 'express'
-import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
-import {UsersService} from "../domain/users-service";
-import {usersService} from "../compositions/composition-users.ts";
-import {injectable} from "inversify";
+import {Router} from 'express'
+import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
+import {container} from "../compositions/composition-root";
+import {AuthController} from "../controllers/auth-controller";
 
 export const authRouter = Router({})
 
-@injectable()
-class AuthController {
-    constructor(protected usersService: UsersService) {
-    }
 
-    async checkCredentials(req: Request, res: Response) {
-        const user = await this.usersService.checkCredentials(req.body.login, req.body.password)
-
-        if (user) {
-            res.status(204).send(user)
-        } else {
-            errorObj.errorsMessages = [{
-                message: 'Cant login this user',
-                field: 'none',
-            }]
-            res.status(401).send(errorObj.errorsMessages[0].message)
-        }
-    }
-}
-
-const authController = new AuthController(usersService);
+const authController = container.resolve(AuthController)
 authRouter
     .post('/login',
         // authMiddleware,

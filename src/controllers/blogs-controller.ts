@@ -1,13 +1,13 @@
-import "reflect-metadata";
 import {BlogsService} from "../domain/blogs-service";
 import {Request, Response} from "express";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {IBlog, IPost} from "../repositories/db";
-import {serializedPostsSortBy} from "../routes/posts-router";
 import {errorObj} from "../middlewares/input-validator-middleware";
-import {IRequest} from "../routes/blogs-router";
-import {postsService} from "../compositions/composition-posts";
 import {injectable} from "inversify";
+
+import {PostsService} from "../domain/posts-service";
+import {IRequest} from "../types/types";
+import {serializedPostsSortBy} from "../utils/helpers";
 
 const serializedBlogsSortBy = (value: string) => {
     switch (value) {
@@ -24,7 +24,7 @@ const serializedBlogsSortBy = (value: string) => {
 
 @injectable()
 export class BlogsController {
-    constructor(protected blogsService: BlogsService) {
+    constructor(protected blogsService: BlogsService, protected postsService: PostsService,) {
     }
 
     async getBlogs(req: Request<{}, {}, {}, IRequest>, res: Response) {
@@ -59,7 +59,7 @@ export class BlogsController {
         const blogId: string = req.params.blogId
         const isBloggerPresent = await this.blogsService.findBlogById(blogId)
         if (isBloggerPresent) {
-            const response: IReturnedFindObj<IPost> = await postsService.findPostsByBlogId(
+            const response: IReturnedFindObj<IPost> = await this.postsService.findPostsByBlogId(
                 blogId,
                 pageNumber,
                 pageSize,
@@ -83,7 +83,7 @@ export class BlogsController {
 
         const isBloggerPresent = await this.blogsService.findBlogById(blogId)
         if (isBloggerPresent) {
-            const newPost = await postsService.createPost(req.body.title,
+            const newPost = await this.postsService.createPost(req.body.title,
                 req.body.shortDescription,
                 req.body.content,
                 blogId)

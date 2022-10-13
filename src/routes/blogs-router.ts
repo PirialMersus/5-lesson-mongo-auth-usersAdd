@@ -2,19 +2,11 @@ import {Router} from 'express'
 import {body, param} from "express-validator";
 import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {container} from "../compositions/composition-blogs";
 import {BlogsController} from "../controllers/blogs-controller";
+import {container} from "../compositions/composition-root";
 
 export const blogsRouter = Router({})
 const blogsController = container.resolve(BlogsController);
-
-export type IRequest = {
-    searchNameTerm: string,
-    pageNumber: string,
-    pageSize: string,
-    sortBy: string,
-    sortDirection: string,
-}
 
 blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
     .get('/:blogId?',

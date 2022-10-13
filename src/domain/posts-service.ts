@@ -1,4 +1,4 @@
-import {blogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
+import {BlogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
 import {IPost, Post} from "../repositories/db"
 import {PostsRepository} from "../repositories/posts-repository"
 import {injectable} from "inversify";
@@ -18,7 +18,7 @@ export type FindConditionsBlogsObjType = {
 @injectable()
 export class PostsService {
 
-    constructor(protected postsRepository: PostsRepository) {
+    constructor(protected postsRepository: PostsRepository, private readonly blogsRepository: BlogsRepository) {
     }
 
     findPosts(pageNumber: number,
@@ -55,7 +55,7 @@ export class PostsService {
     }
 
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<IPost | null> {
-        const blog = await blogsRepository.findBlogById(blogId)
+        const blog = await this.blogsRepository.findBlogById(blogId)
         const date = new Date()
         const newPost: IPost = new Post(title,
             shortDescription,

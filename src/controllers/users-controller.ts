@@ -1,12 +1,11 @@
-import "reflect-metadata";
 import {UsersService} from "../domain/users-service";
 import {Request, Response} from "express";
-import {IQuery} from "../routes/posts-router";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {IUser} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
-import {serializedUsersSortBy} from "../routes/users-router";
 import {injectable} from "inversify";
+import {IQuery} from "../types/types";
+import {serializedUsersSortBy} from "../utils/helpers";
 
 @injectable()
 export class UsersController {

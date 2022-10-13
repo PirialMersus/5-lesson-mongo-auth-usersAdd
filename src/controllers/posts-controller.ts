@@ -1,13 +1,13 @@
-import "reflect-metadata";
 import {PostsService} from "../domain/posts-service";
 import {Request, Response} from "express";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {IPost} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
-import {IQuery, serializedPostsSortBy} from "../routes/posts-router";
 // import {blogsService} from "../compositions/composition-blogs";
 import {injectable} from "inversify";
 import {BlogsService} from "../domain/blogs-service";
+import {IQuery} from "../types/types";
+import {serializedPostsSortBy} from "../utils/helpers";
 
 @injectable()
 export class PostsController {

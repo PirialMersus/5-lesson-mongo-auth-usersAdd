@@ -1,10 +1,12 @@
 import {IBlog, IPost, postsCollection} from "./db";
-import {blogsRepository, IReturnedFindObj} from "./blogs-repository";
+import {BlogsRepository, IReturnedFindObj} from "./blogs-repository";
 import {FindConditionsBlogsObjType, FindConditionsPostsObjType} from "../domain/posts-service";
 import {injectable} from "inversify";
 
 @injectable()
 export class PostsRepository {
+    constructor(private readonly blogsRepository: BlogsRepository) {
+    }
     async findPosts({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
                     sortBy: keyof IPost,
                     sortDirection: string): Promise<IReturnedFindObj<IPost>> {
@@ -69,7 +71,7 @@ export class PostsRepository {
                      shortDescription: string,
                      content: string,
                      blogId: string): Promise<boolean> {
-        const blogger: IBlog | null = await blogsRepository.findBlogById(blogId)
+        const blogger: IBlog | null = await this.blogsRepository.findBlogById(blogId)
         let result = await postsCollection.updateOne({id}, {
             $set: {
                 title,
@@ -90,4 +92,4 @@ export class PostsRepository {
     }
 }
 
-export const postsRepository = new PostsRepository()
+//export const postsRepository = new PostsRepository()

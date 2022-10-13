@@ -3,24 +3,12 @@ import {body, param} from "express-validator";
 import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 // import {usersService} from "../domain/users-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {usersController} from "../compositions/composition-users.ts";
-
-export const serializedUsersSortBy = (value: string) => {
-    switch (value) {
-        case 'login':
-            return 'login';
-        case '_id':
-            return '_id'
-        case 'id':
-            return 'id'
-        case 'email':
-            return 'email'
-        default:
-            return 'createdAt'
-    }
-}
+import {container} from "../compositions/composition-root";
+import {UsersController} from "../controllers/users-controller";
 
 export const usersRouter = Router({})
+
+const usersController = container.resolve(UsersController)
 
 usersRouter.get('/', usersController.getUsers.bind(usersController))
     .post('/',
