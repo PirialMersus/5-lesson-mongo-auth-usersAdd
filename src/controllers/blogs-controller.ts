@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {BlogsService} from "../domain/blogs-service";
 import {Request, Response} from "express";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
@@ -6,6 +7,7 @@ import {serializedPostsSortBy} from "../routes/posts-router";
 import {errorObj} from "../middlewares/input-validator-middleware";
 import {IRequest} from "../routes/blogs-router";
 import {postsService} from "../compositions/composition-posts";
+import {injectable} from "inversify";
 
 const serializedBlogsSortBy = (value: string) => {
     switch (value) {
@@ -20,6 +22,7 @@ const serializedBlogsSortBy = (value: string) => {
     }
 }
 
+@injectable()
 export class BlogsController {
     constructor(protected blogsService: BlogsService) {
     }

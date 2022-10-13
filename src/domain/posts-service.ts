@@ -1,6 +1,7 @@
 import {blogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
 import {IPost, Post} from "../repositories/db"
 import {PostsRepository} from "../repositories/posts-repository"
+import {injectable} from "inversify";
 
 export type FindConditionsPostsObjType = {
     pageNumber: number
@@ -14,6 +15,7 @@ export type FindConditionsBlogsObjType = {
     skip: number
 }
 
+@injectable()
 export class PostsService {
 
     constructor(protected postsRepository: PostsRepository) {

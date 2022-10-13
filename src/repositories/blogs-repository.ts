@@ -1,6 +1,7 @@
 import {blogsCollection, IBlog} from "./db";
 import {IFindObj} from "../domain/blogs-service";
 import {Filter} from "mongodb";
+import {injectable} from "inversify";
 
 export interface IReturnedFindObj<T> {
     pagesCount: number,
@@ -10,6 +11,7 @@ export interface IReturnedFindObj<T> {
     items: T[]
 }
 
+@injectable()
 export class BlogsRepository {
     async findBlogs({name, pageNumber, pageSize, skip}: IFindObj,
                     sortBy: keyof IBlog,

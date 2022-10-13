@@ -1,12 +1,14 @@
+import "reflect-metadata";
 import {PostsService} from "../domain/posts-service";
-import {BlogsService} from "../domain/blogs-service";
 import {Request, Response} from "express";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {IPost} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
 import {IQuery, serializedPostsSortBy} from "../routes/posts-router";
 import {blogsService} from "../compositions/composition-blogs";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsController {
     constructor(protected postsService: PostsService) {
     }
@@ -24,12 +26,7 @@ export class PostsController {
         res.send(posts);
     }
 
-    async findPostById(id: string) {
-        return await this.postsService.findPostById(id)
-    }
-
     async findBlogById(id: string) {
-
         return await blogsService.findBlogById(id)
     }
 

@@ -2,7 +2,9 @@ import {IUser, usersCollection} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {WithId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersRepository {
     async findUsers({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
                     sortBy: keyof IUser,

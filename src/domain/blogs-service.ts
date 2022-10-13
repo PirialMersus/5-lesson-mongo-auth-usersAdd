@@ -1,5 +1,6 @@
 import {BlogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
 import {Blog, IBlog} from "../repositories/db"
+import {injectable} from "inversify";
 
 export interface IFindObj {
     name: string,
@@ -8,6 +9,7 @@ export interface IFindObj {
     skip: number,
 }
 
+@injectable()
 export class BlogsService {
     constructor(protected blogsRepository: BlogsRepository) {
     }

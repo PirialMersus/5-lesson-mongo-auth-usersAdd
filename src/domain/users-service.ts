@@ -3,7 +3,9 @@ import {UsersRepository} from "../repositories/users-repository";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {FindConditionsPostsObjType} from "./posts-service";
 import bcrypt from 'bcrypt'
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersService {
 
 

@@ -1,10 +1,13 @@
+import "reflect-metadata";
 import {Request, Response, Router} from 'express'
 import {errorObj, inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {UsersService} from "../domain/users-service";
 import {usersService} from "../compositions/composition-users.ts";
+import {injectable} from "inversify";
 
 export const authRouter = Router({})
 
+@injectable()
 class AuthController {
     constructor(protected usersService: UsersService) {
     }

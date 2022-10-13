@@ -2,9 +2,11 @@ import {Router} from 'express'
 import {body, param} from "express-validator";
 import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {blogsController} from "../compositions/composition-blogs";
+import {container} from "../compositions/composition-blogs";
+import {BlogsController} from "../controllers/blogs-controller";
 
 export const blogsRouter = Router({})
+const blogsController = container.resolve(BlogsController);
 
 export type IRequest = {
     searchNameTerm: string,
