@@ -5,12 +5,13 @@ import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {IPost} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
 import {IQuery, serializedPostsSortBy} from "../routes/posts-router";
-import {blogsService} from "../compositions/composition-blogs";
+// import {blogsService} from "../compositions/composition-blogs";
 import {injectable} from "inversify";
+import {BlogsService} from "../domain/blogs-service";
 
 @injectable()
 export class PostsController {
-    constructor(protected postsService: PostsService) {
+    constructor(protected postsService: PostsService, protected blogsService: BlogsService) {
     }
 
     async getPosts(req: Request<{}, {}, {}, IQuery>, res: Response) {
@@ -27,7 +28,7 @@ export class PostsController {
     }
 
     async findBlogById(id: string) {
-        return await blogsService.findBlogById(id)
+        return await this.blogsService.findBlogById(id)
     }
 
     async getPost(req: Request, res: Response) {
