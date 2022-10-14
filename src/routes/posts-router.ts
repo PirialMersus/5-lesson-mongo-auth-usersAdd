@@ -1,7 +1,7 @@
 import {Router} from 'express'
 import {body, param} from "express-validator";
 import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
-import {authMiddleware} from "../middlewares/auth-middleware";
+import {basicAuthMiddleware, bearerAuthMiddleware} from "../middlewares/authMiddleware";
 import {PostsController} from "../controllers/posts-controller";
 import {container} from "../compositions/composition-root";
 
@@ -14,7 +14,7 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
         inputValidatorMiddleware,
         postsController.getPost.bind(postsController))
     .post('/',
-        authMiddleware,
+        basicAuthMiddleware,
         body('title').trim().not().isEmpty().withMessage('enter input value in title field'),
         body('shortDescription').trim().not().isEmpty().withMessage('enter input value in shortDescription field'),
         body('content').trim().not().isEmpty().withMessage('enter input value in content field'),
@@ -33,8 +33,17 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
         }),
         inputValidatorMiddleware,
         postsController.createPost.bind(postsController))
+    .post('/:postId/comments',
+        basicAuthMiddleware,
+        param('postId').trim().not().isEmpty().withMessage('enter postId value in params'),
+        body('content').trim().not().isEmpty().withMessage('enter input value in content field'),
+        body('content').isLength({max: 300, min: 20}).withMessage('content: maxLength: 300 minLength: 20'),
+
+        inputValidatorMiddleware,
+        bearerAuthMiddleware,
+        postsController.createCommentForPost.bind(postsController))
     .put('/:id?',
-        authMiddleware,
+        basicAuthMiddleware,
         body('blogId').custom(async (value, {}) => {
             const isBloggerPresent = await postsController.findBlogById(value)
             if (!isBloggerPresent) {
@@ -54,7 +63,7 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
         inputValidatorMiddleware,
         postsController.updatePost.bind(postsController))
     .delete('/:id?',
-        authMiddleware,
+        basicAuthMiddleware,
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
         postsController.deletePost.bind(postsController))

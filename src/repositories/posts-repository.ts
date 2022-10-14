@@ -1,7 +1,8 @@
-import {IBlog, IPost, postsCollection} from "./db";
+import {postsCollection} from "./db";
 import {BlogsRepository, IReturnedFindObj} from "./blogs-repository";
 import {FindConditionsBlogsObjType, FindConditionsPostsObjType} from "../domain/posts-service";
 import {injectable} from "inversify";
+import {IBlog, IPost} from "../types/types";
 
 @injectable()
 export class PostsRepository {

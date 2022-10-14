@@ -1,7 +1,8 @@
-import {blogsCollection, IBlog} from "./db";
+import {blogsCollection} from "./db";
 import {IFindObj} from "../domain/blogs-service";
 import {Filter} from "mongodb";
 import {injectable} from "inversify";
+import {IBlog} from "../types/types";
 
 export interface IReturnedFindObj<T> {
     pagesCount: number,
@@ -44,12 +45,13 @@ export class BlogsRepository {
             return null
         }
     }
-    // have to have return value type
+
     async createBlogger(newBlog: IBlog): Promise<IBlog | null> {
 
         await blogsCollection.insertOne(newBlog)
         return blogsCollection.findOne({id: newBlog.id}, {projection: {_id: 0}})
     }
+
     async updateBlog(id: string, name: string, youtubeUrl: string): Promise<boolean> {
         let result = await blogsCollection.updateOne({id}, {
             $set: {name, youtubeUrl}
@@ -63,5 +65,3 @@ export class BlogsRepository {
     }
 
 }
-
-//export const blogsRepository = new BlogsRepository()

@@ -1,10 +1,9 @@
 import {UsersService} from "../domain/users-service";
 import {Request, Response} from "express";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
-import {IUser} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
 import {injectable} from "inversify";
-import {IQuery} from "../types/types";
+import {IQuery, IUser} from "../types/types";
 import {serializedUsersSortBy} from "../utils/helpers";
 
 @injectable()
@@ -28,6 +27,17 @@ export class UsersController {
             searchEmailTerm
         )
         res.send(users);
+    }
+
+    async getUser(req: Request, res: Response) {
+        const user = await this.usersService.findUserByIdSomeDataReturn(req.user!.id)
+        console.log('user', user)
+        if (user) {
+            res.status(200).send(user)
+        } else {
+            res.send(401);
+        }
+
     }
 
     async createUser(req: Request, res: Response) {

@@ -1,7 +1,8 @@
 import {BlogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
-import {IPost, Post} from "../repositories/db"
+import {Post} from "../repositories/db"
 import {PostsRepository} from "../repositories/posts-repository"
 import {injectable} from "inversify";
+import {IPost} from "../types/types";
 
 export type FindConditionsPostsObjType = {
     pageNumber: number

@@ -1,13 +1,13 @@
-import {IUser, User} from "../repositories/db"
+import {User} from "../repositories/db"
 import {UsersRepository} from "../repositories/users-repository";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
 import {FindConditionsPostsObjType} from "./posts-service";
 import bcrypt from 'bcrypt'
 import {injectable} from "inversify";
+import {IUser} from "../types/types";
 
 @injectable()
 export class UsersService {
-
 
     constructor(protected usersRepository: UsersRepository) {
     }
@@ -33,6 +33,24 @@ export class UsersService {
         )
     }
 
+    async findUserByIdAllDataReturn(id: string) {
+        console.log('id', id)
+        const user = await this.usersRepository.findUserById(id)
+        if (!user) return null
+
+        return user
+    }
+    async findUserByIdSomeDataReturn(id: string) {
+        const user = await this.usersRepository.findUserById(id)
+        if (!user) return null
+
+        return {
+            email: user.email,
+            login: user.login,
+            userId: user.id
+        }
+    }
+
     async createUser(login: string, password: string, email: string): Promise<IUser | null> {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
@@ -46,11 +64,13 @@ export class UsersService {
         return this.usersRepository.deleteUser(id)
     }
 
-    async checkCredentials(login: string, password: string): Promise<boolean> {
-        const user = await this.usersRepository.findUser(login)
-        if (!user) return false
+    async checkCredentials(login: string, password: string): Promise<IUser | null> {
+        const user: IUser | null = await this.usersRepository.findUser(login)
+        if (!user) return null
         const passwordHash = await this._generateHash(password, user.passwordSalt)
-        return user.passwordHash === passwordHash;
+        if (user.passwordHash === passwordHash) {
+            return user
+        } else return null
 
     }
 

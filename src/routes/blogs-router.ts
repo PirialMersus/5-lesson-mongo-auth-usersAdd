@@ -1,7 +1,7 @@
 import {Router} from 'express'
 import {body, param} from "express-validator";
 import {inputValidatorMiddleware} from "../middlewares/input-validator-middleware";
-import {authMiddleware} from "../middlewares/auth-middleware";
+import {basicAuthMiddleware} from "../middlewares/authMiddleware";
 import {BlogsController} from "../controllers/blogs-controller";
 import {container} from "../compositions/composition-root";
 
@@ -18,7 +18,7 @@ blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
         inputValidatorMiddleware,
         blogsController.getPostsOfBlog.bind(blogsController))
     .post('/',
-        authMiddleware,
+        basicAuthMiddleware,
         body('youtubeUrl').trim().not().isEmpty().withMessage('enter input value in youtubeUrl field'),
         body('name').trim().not().isEmpty().withMessage('enter input value in name field'),
         body('youtubeUrl').isLength({max: 100}).withMessage('youtubeUrl length should be less then 100'),
@@ -33,7 +33,7 @@ blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
         inputValidatorMiddleware,
         blogsController.createBlog.bind(blogsController))
     .post('/:blogId/posts',
-        authMiddleware,
+        basicAuthMiddleware,
         param('blogId').trim().not().isEmpty().withMessage('enter blogId value in params'),
         body('title').trim().not().isEmpty().withMessage('enter input value in title field'),
         body('shortDescription').trim().not().isEmpty().withMessage('enter input value in shortDescription field'),
@@ -46,7 +46,7 @@ blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
         inputValidatorMiddleware,
         blogsController.createPostForBlog.bind(blogsController))
     .put('/:id?',
-        authMiddleware,
+        basicAuthMiddleware,
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
         body('name').trim().not().isEmpty().withMessage('enter input value in name field'),
         body('youtubeUrl').trim().not().isEmpty().withMessage('enter input value in youtubeUrl field'),
@@ -62,7 +62,7 @@ blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
         inputValidatorMiddleware,
         blogsController.updateBlog.bind(blogsController))
     .delete('/:id?',
-        authMiddleware,
+        basicAuthMiddleware,
         param('id').not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
         blogsController.deleteBlog.bind(blogsController))

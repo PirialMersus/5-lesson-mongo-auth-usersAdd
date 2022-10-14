@@ -1,12 +1,11 @@
 import {BlogsService} from "../domain/blogs-service";
 import {Request, Response} from "express";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
-import {IBlog, IPost} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
 import {injectable} from "inversify";
 
 import {PostsService} from "../domain/posts-service";
-import {IRequest} from "../types/types";
+import {IBlog, IPost, IRequest} from "../types/types";
 import {serializedPostsSortBy} from "../utils/helpers";
 
 const serializedBlogsSortBy = (value: string) => {
@@ -24,7 +23,7 @@ const serializedBlogsSortBy = (value: string) => {
 
 @injectable()
 export class BlogsController {
-    constructor(protected blogsService: BlogsService, protected postsService: PostsService,) {
+    constructor(protected blogsService: BlogsService, protected postsService: PostsService) {
     }
 
     async getBlogs(req: Request<{}, {}, {}, IRequest>, res: Response) {
@@ -96,10 +95,11 @@ export class BlogsController {
     async updateBlog(req: Request, res: Response) {
         const name = req.body.name;
         const youtubeUrl = req.body.youtubeUrl;
+        const id = req.params.id;
 
-        const isUpdated: boolean = await this.blogsService.updateBlogger(req.params.id, name, youtubeUrl)
+        const isUpdated: boolean = await this.blogsService.updateBlogger(id, name, youtubeUrl)
         if (isUpdated) {
-            const blogger = await this.blogsService.findBlogById(req.params.id)
+            const blogger = await this.blogsService.findBlogById(id)
             res.status(204).send(blogger)
         } else {
             errorObj.errorsMessages = [{

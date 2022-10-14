@@ -1,17 +1,19 @@
 import {PostsService} from "../domain/posts-service";
 import {Request, Response} from "express";
 import {IReturnedFindObj} from "../repositories/blogs-repository";
-import {IPost} from "../repositories/db";
 import {errorObj} from "../middlewares/input-validator-middleware";
 // import {blogsService} from "../compositions/composition-blogs";
 import {injectable} from "inversify";
 import {BlogsService} from "../domain/blogs-service";
-import {IQuery} from "../types/types";
+import {IPost, IQuery} from "../types/types";
 import {serializedPostsSortBy} from "../utils/helpers";
+import {CommentsService} from "../domain/comments-service";
 
 @injectable()
 export class PostsController {
-    constructor(protected postsService: PostsService, protected blogsService: BlogsService) {
+    constructor(protected postsService: PostsService,
+                protected blogsService: BlogsService,
+                protected commentsService: CommentsService) {
     }
 
     async getPosts(req: Request<{}, {}, {}, IQuery>, res: Response) {
@@ -69,6 +71,20 @@ export class PostsController {
                 field: 'none',
             }]
             res.status(404).send(errorObj)
+        }
+    }
+
+    async createCommentForPost(req: Request, res: Response) {
+        const postId: string = req.params.postId
+
+        const post = await this.postsService.findPostById(postId)
+        if (post) {
+            const newComment = await this.commentsService.createComment(post,
+                req.body.content,
+            )
+            res.status(201).send(newComment)
+        } else {
+            res.send(404);
         }
     }
 

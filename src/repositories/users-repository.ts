@@ -1,8 +1,9 @@
-import {IUser, usersCollection} from "./db";
+import {usersCollection} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {WithId} from "mongodb";
 import {injectable} from "inversify";
+import {IUser} from "../types/types";
 
 @injectable()
 export class UsersRepository {
@@ -43,6 +44,14 @@ export class UsersRepository {
                 items: foundUsers
             })
         })
+    }
+    async findUserById(id: string): Promise<IUser | null> {
+        let user = usersCollection.findOne({id}, {projection: {_id: 0}})
+        if (user) {
+            return user
+        } else {
+            return null
+        }
     }
 
     async createUser(newUser: IUser): Promise<IUser | null> {

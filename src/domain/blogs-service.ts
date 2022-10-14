@@ -1,6 +1,7 @@
 import {BlogsRepository, IReturnedFindObj} from "../repositories/blogs-repository"
-import {Blog, IBlog} from "../repositories/db"
+import {Blog} from "../repositories/db"
 import {injectable} from "inversify";
+import {IBlog} from "../types/types";
 
 export interface IFindObj {
     name: string,

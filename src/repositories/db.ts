@@ -1,11 +1,6 @@
 import {MongoClient, ObjectId} from 'mongodb'
+import {IBlog, IComment, IPassword, IPost, IUser} from "../types/types";
 
-export interface IBlog {
-    name: string,
-    youtubeUrl: string,
-    id: string,
-    createdAt: string
-}
 
 export class Blog {
     createdAt: string
@@ -20,15 +15,20 @@ export class Blog {
     }
 }
 
-export interface IPost {
-    id: string,
-    blogId: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogName: string,
+export class Comment {
     createdAt: string
+    id: string
+    static date: Date
+
+    constructor(public content: string,
+                public userId: string,
+                public userLogin: string,
+                date: Date) {
+        this.createdAt = date.toISOString()
+        this.id = (+date).toString()
+    }
 }
+
 
 export class Post {
     createdAt: string
@@ -66,22 +66,7 @@ export class User {
     }
 }
 
-export interface IUser {
-    _id: ObjectId,
-    login: string,
-    email: string,
-    createdAt: string,
-    passwordSalt: string,
-    passwordHash: string,
-    id: string
-}
 
-export interface IPassword {
-    id: number,
-    service: string,
-    name: string,
-    password: string,
-}
 
 export interface IPasswordObjectType {
     userId: number,
@@ -94,6 +79,7 @@ export const client = new MongoClient(uri);
 export const blogsCollection = client.db().collection<IBlog>('blogs')
 export const postsCollection = client.db().collection<IPost>('posts')
 export const usersCollection = client.db().collection<IUser>('users')
+export const commentsCollection = client.db().collection<IComment>('comments')
 
 
 export async function runDb() {
