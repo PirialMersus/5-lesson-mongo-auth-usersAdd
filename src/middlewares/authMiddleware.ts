@@ -21,6 +21,7 @@ export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunct
     }
     res.sendStatus(401)
 }
+
 export const bearerAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
         res.send(401)
@@ -32,9 +33,9 @@ export const bearerAuthMiddleware = async (req: Request, res: Response, next: Ne
     if (userId) {
         const user = await container.resolve(UsersService).findUserByIdAllDataReturn(userId)
         req.user = user
-
     } else {
         res.sendStatus(401)
+        return
     }
     next()
 }

@@ -14,7 +14,7 @@ export class AuthController {
 
         if (user) {
             const token = await jwtService.createJWT(user)
-            res.status(201).send(token)
+            res.status(200).send(token)
         } else {
             errorObj.errorsMessages = [{
                 message: 'Cant login this user',
