@@ -14,7 +14,9 @@ export class AuthController {
 
         if (user) {
             const token = await jwtService.createJWT(user)
-            res.status(200).send(token)
+            res.status(200).send({
+                "accessToken": token
+            })
         } else {
             errorObj.errorsMessages = [{
                 message: 'Cant login this user',
@@ -23,6 +25,7 @@ export class AuthController {
             res.status(401).send(errorObj.errorsMessages[0].message)
         }
     }
+
     async getUserInformation(req: Request, res: Response) {
         const user = await this.usersService.checkCredentials(req.body.login, req.body.password)
 
