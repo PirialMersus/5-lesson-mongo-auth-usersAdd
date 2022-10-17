@@ -26,10 +26,10 @@ export class CommentsController {
         const user = req.user
 
         const isUpdated: boolean | 'notMyOwnComment' = await this.commentsService.updateComment(id, content, user?.id)
-        if (isUpdated === 'notMyOwnComment') {
-            res.sendStatus(403)
-            return
-        }
+        // if (isUpdated === 'notMyOwnComment') {
+        //     res.sendStatus(403)
+        //     return
+        // }
         if (isUpdated) {
             res.sendStatus(204)
             return
