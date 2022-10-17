@@ -43,7 +43,7 @@ export class CommentsController {
 
     async deleteComment(req: Request, res: Response) {
         const id = req.params.id;
-        const isDeleted = await this.commentsService.deleteComment(id)
+        const isDeleted: boolean | 'notMyComment' = await this.commentsService.deleteComment(id, req.user?.id)
 
         if (isDeleted) {
             res.sendStatus(204)
