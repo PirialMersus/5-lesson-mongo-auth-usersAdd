@@ -3,6 +3,7 @@ import {jwtService} from "../application/jwtService";
 import {container} from "../compositions/composition-root";
 import {UsersService} from "../domain/users-service";
 import {IUser} from "../types/types";
+import {CommentsService} from "../domain/comments-service";
 
 export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // console.log('req.headers.authorization', req.headers.authorization)
@@ -25,7 +26,7 @@ export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunct
 
 export const bearerAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
-        res.send(401)
+        res.sendStatus(401)
         return
     }
     const token = req.headers.authorization.split(' ')[1]
@@ -39,4 +40,15 @@ export const bearerAuthMiddleware = async (req: Request, res: Response, next: Ne
         return
     }
     next()
+}
+export const isItUserCom = async (req: Request, res: Response, next: NextFunction) => {
+    const commentId = req.params.id
+    const comUser = await container.resolve(CommentsService).findCommentById(commentId)
+    if (!comUser) {
+        res.sendStatus(404)
+    } else if (comUser.userLogin != req.user?.login) {
+        res.sendStatus(403)
+    } else {
+        next()
+    }
 }

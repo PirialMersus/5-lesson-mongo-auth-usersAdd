@@ -45,7 +45,8 @@ export class PostsController {
 
     async createPost(req: Request, res: Response) {
 
-        const newPost = await this.postsService.createPost(req.body.title,
+        const newPost = await this.postsService.createPost(
+            req.body.title,
             req.body.shortDescription,
             req.body.content,
             req.body.blogId)
@@ -107,7 +108,8 @@ export class PostsController {
             return
         }
 
-        const newComment = await this.commentsService.createComment(post,
+        const newComment = await this.commentsService.createComment(
+            post,
             req.body.content,
             user
         )

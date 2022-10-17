@@ -47,7 +47,6 @@ export class BlogsRepository {
     }
 
     async createBlogger(newBlog: IBlog): Promise<IBlog | null> {
-
         await blogsCollection.insertOne(newBlog)
         return blogsCollection.findOne({id: newBlog.id}, {projection: {_id: 0}})
     }
