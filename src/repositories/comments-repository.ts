@@ -21,7 +21,7 @@ export class CommentsRepository {
                                sortDirection: string): Promise<IReturnedFindObj<IComment>> {
         const count = await commentsCollection.find({postId}).count()
         const foundComments: WithId<IComment>[] = await commentsCollection
-            .find({postId}, {projection: {_id: false}})
+            .find({postId}, {projection: {_id: false, postId: 0}})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
