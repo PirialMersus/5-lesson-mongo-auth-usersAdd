@@ -30,7 +30,9 @@ export class CommentsService {
         return this.commentsRepository.findCommentsByPostId(findConditionsObj, sortBy, sortDirection)
     }
 
-    async updateComment(id: string, content: string): Promise<boolean> {
+    async updateComment(id: string, content: string, userId: string | undefined) {
+        const comment = await this.commentsRepository.findCommentById(id)
+        if (comment?.id !== userId) return 'notMyOwnComment'
         return this.commentsRepository.updateComment(id, content)
     }
 

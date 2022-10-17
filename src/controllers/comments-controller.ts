@@ -23,13 +23,22 @@ export class CommentsController {
         // const user: IUser | null = req.user
         const id = req.params.id;
         const content = req.body.content;
+        const user = req.user
 
-        const isUpdated = await this.commentsService.updateComment(id, content)
+        const isUpdated: boolean | 'notMyOwnComment' = await this.commentsService.updateComment(id, content, user?.id)
+        if (isUpdated === 'notMyOwnComment') {
+            res.sendStatus(403)
+            return
+        }
         if (isUpdated) {
             res.sendStatus(204)
-        } else {
-            res.sendStatus(404)
+            return
         }
+        if (!isUpdated){
+            res.sendStatus(404)
+            return
+        }
+
     }
 
     async deleteComment(req: Request, res: Response) {
