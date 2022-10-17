@@ -46,7 +46,7 @@ export class BlogsController {
         if (blog) {
             res.send(blog)
         } else {
-            res.send(404)
+            res.sendStatus(404)
         }
     }
 
@@ -66,7 +66,7 @@ export class BlogsController {
                 sortDirection)
             res.send(response);
         } else {
-            res.send(404);
+            res.sendStatus(404);
         }
 
     }
@@ -88,7 +88,7 @@ export class BlogsController {
                 blogId)
             res.status(201).send(newPost)
         } else {
-            res.send(404);
+            res.sendStatus(404);
         }
     }
 
@@ -121,7 +121,7 @@ export class BlogsController {
             }]
             res.status(404).send(errorObj)
         } else {
-            res.send(204)
+            res.sendStatus(204)
         }
     }
 }

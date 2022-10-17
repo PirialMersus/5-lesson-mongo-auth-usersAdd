@@ -31,7 +31,7 @@ app.use('/comments', commentsRouter)
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     const isAllDeleted = await commonRepository.deleteAll();
     if (isAllDeleted) {
-        res.send(204)
+        res.sendStatus(204)
     }else {
         errorObj.errorsMessages = [{
             message: 'Something wrong on the server',

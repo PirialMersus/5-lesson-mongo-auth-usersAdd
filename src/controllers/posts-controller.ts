@@ -39,7 +39,7 @@ export class PostsController {
         if (post) {
             res.send(post)
         } else {
-            res.send(404)
+            res.sendStatus(404)
         }
     }
 

@@ -34,10 +34,8 @@ export const bearerAuthMiddleware = async (req: Request, res: Response, next: Ne
 
     try {
         const result: any = jwt.verify(token, settings.JWT_SECRET)
-        console.log('userId try', result.userId)
         const user: IUser | null = await container.resolve(UsersService).findUserByIdAllDataReturn(result.userId)
         if (!user) {
-            console.log('я здесь !user')
             res.sendStatus(404)
             return
         }
