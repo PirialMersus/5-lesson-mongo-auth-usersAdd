@@ -62,7 +62,6 @@ export class PostsRepository {
 
     // have to have return value type
     async createPost(newPost: IPost): Promise<IPost | null> {
-        console.log('-------------newPost.blogId', newPost.blogId)
         await postsCollection.insertOne(newPost)
         return postsCollection.findOne({id: newPost.id}, {projection: {_id: 0}})
     }

@@ -55,7 +55,6 @@ export class UsersRepository {
     }
 
     async createUser(newUser: IUser): Promise<IUser | null> {
-        console.log()
         await usersCollection.insertOne(newUser)
         return usersCollection.findOne({_id: newUser._id}, {
             projection: {

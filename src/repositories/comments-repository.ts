@@ -38,8 +38,6 @@ export class CommentsRepository {
     }
 
     async createComment(comment: IComment): Promise<IComment | null> {
-        console.log('---------------------comment.id', comment.id)
-        console.log('---------------------comment.postId', comment.postId)
         await commentsCollection.insertOne(comment)
         return commentsCollection.findOne({id: comment.id}, {projection: {_id: 0, postId: 0}})
     }

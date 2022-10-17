@@ -46,21 +46,9 @@ export class CommentsService {
         return this.commentsRepository.createComment(newComment)
     }
 
-    async deleteComment(id: string, userId: string | undefined): Promise<boolean | 'notMyComment'>{
+    async deleteComment(id: string, userId: string | undefined): Promise<boolean | 'notMyComment'> {
         const comment = await this.commentsRepository.findCommentById(id)
-        console.log('comment.userId', comment?.userId)
-        console.log('userId', userId)
         if (comment?.userId !== userId) return 'notMyComment'
         return this.commentsRepository.deleteComment(id)
     }
 }
-
-// export interface IComment {
-//     _id: ObjectId,
-//     content: string,
-//     userId: string,
-//     createdAt: string,
-//     userLogin: string,
-//     postId: string,
-//     id: string
-// }
