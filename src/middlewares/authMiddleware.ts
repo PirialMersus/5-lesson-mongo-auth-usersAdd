@@ -25,7 +25,7 @@ export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunct
 }
 
 export const bearerAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers.authorization) {
+    if (!req.headers.authorization || !req.headers) {
         res.sendStatus(401)
         return
     }
