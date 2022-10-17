@@ -8,7 +8,6 @@ import {WithId} from "mongodb";
 @injectable()
 export class CommentsRepository {
     async findCommentById(id: string): Promise<IComment | null> {
-        console.log('id', id)
         let comment = commentsCollection.findOne({id}, {projection: {_id: 0, postId: 0},})
         if (comment) {
             return comment
