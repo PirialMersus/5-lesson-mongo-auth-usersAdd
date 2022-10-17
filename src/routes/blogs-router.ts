@@ -16,7 +16,7 @@ blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
     .get('/:blogId/posts',
         param('blogId').not().isEmpty().withMessage('enter blogId value in params'),
         inputValidatorMiddleware,
-        blogsController.getPostsOfBlog.bind(blogsController))
+        blogsController.getPostsOfTheBlog.bind(blogsController))
     .post('/',
         basicAuthMiddleware,
         body('youtubeUrl').trim().not().isEmpty().withMessage('enter input value in youtubeUrl field'),

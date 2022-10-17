@@ -45,8 +45,10 @@ export interface IComment {
     userId: string,
     createdAt: string,
     userLogin: string,
+    postId: string,
     id: string
 }
+
 export interface IPassword {
     id: number,
     service: string,

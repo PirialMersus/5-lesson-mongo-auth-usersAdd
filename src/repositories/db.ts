@@ -18,14 +18,17 @@ export class Blog {
 export class Comment {
     createdAt: string
     id: string
+    _id: ObjectId
     static date: Date
 
     constructor(public content: string,
                 public userId: string,
                 public userLogin: string,
+                public postId: string,
                 date: Date) {
         this.createdAt = date.toISOString()
         this.id = (+date).toString()
+        this._id = new ObjectId()
     }
 }
 

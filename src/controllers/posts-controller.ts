@@ -5,8 +5,8 @@ import {errorObj} from "../middlewares/input-validator-middleware";
 // import {blogsService} from "../compositions/composition-blogs";
 import {injectable} from "inversify";
 import {BlogsService} from "../domain/blogs-service";
-import {IPost, IQuery} from "../types/types";
-import {serializedPostsSortBy} from "../utils/helpers";
+import {IComment, IPost, IQuery, IRequest, IUser} from "../types/types";
+import {serializedCommentsSortBy, serializedPostsSortBy} from "../utils/helpers";
 import {CommentsService} from "../domain/comments-service";
 
 @injectable()
@@ -74,18 +74,42 @@ export class PostsController {
         }
     }
 
-    async createCommentForPost(req: Request, res: Response) {
+    async getCommentsOfThePost(req: Request<{ postId: string }, {}, {}, IRequest>, res: Response) {
+        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
+        const pageSize = req.query.pageSize ? +req.query.pageSize : 10
+        const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'
+        const sortDirection = req.query.sortDirection ? req.query.sortDirection : 'desc'
         const postId: string = req.params.postId
 
         const post = await this.postsService.findPostById(postId)
-        if (post) {
-            const newComment = await this.commentsService.createComment(post,
-                req.body.content,
-            )
-            res.status(201).send(newComment)
-        } else {
-            res.send(404);
+        if (!post) {
+            res.sendStatus(404);
+            return
         }
+        const response: IReturnedFindObj<IComment> = await this.commentsService.findCommentsByPostId(
+            postId,
+            pageNumber,
+            pageSize,
+            serializedCommentsSortBy(sortBy),
+            sortDirection)
+        res.status(201).send(response)
+    }
+
+    async createCommentForPost(req: Request, res: Response) {
+        const postId: string = req.params.postId
+        const user: IUser | null = req.user
+
+        const post = await this.postsService.findPostById(postId)
+        if (!post || !user) {
+            res.sendStatus(404)
+            return
+        }
+
+        const newComment = await this.commentsService.createComment(post,
+            req.body.content,
+            user
+        )
+        res.status(201).send(newComment)
     }
 
     async deletePost(req: Request, res: Response) {

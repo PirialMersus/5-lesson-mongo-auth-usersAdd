@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {jwtService} from "../application/jwtService";
 import {container} from "../compositions/composition-root";
 import {UsersService} from "../domain/users-service";
+import {IUser} from "../types/types";
 
 export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // console.log('req.headers.authorization', req.headers.authorization)
@@ -31,7 +32,7 @@ export const bearerAuthMiddleware = async (req: Request, res: Response, next: Ne
 
     const userId = await jwtService.getUserIdByToken(token)
     if (userId) {
-        const user = await container.resolve(UsersService).findUserByIdAllDataReturn(userId)
+        const user: IUser | null = await container.resolve(UsersService).findUserByIdAllDataReturn(userId)
         req.user = user
     } else {
         res.sendStatus(401)

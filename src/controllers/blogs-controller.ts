@@ -50,7 +50,7 @@ export class BlogsController {
         }
     }
 
-    async getPostsOfBlog(req: Request<{ blogId: string }, {}, {}, IRequest>, res: Response) {
+    async getPostsOfTheBlog(req: Request<{ blogId: string }, {}, {}, IRequest>, res: Response) {
         const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1
         const pageSize = req.query.pageSize ? +req.query.pageSize : 10
         const sortBy: string = req.query.sortBy ? req.query.sortBy : 'createdAt'

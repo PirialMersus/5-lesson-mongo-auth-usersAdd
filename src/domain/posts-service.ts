@@ -9,8 +9,9 @@ export type FindConditionsPostsObjType = {
     pageSize: number
     skip: number
 }
-export type FindConditionsBlogsObjType = {
-    blogId: string
+export type FindConditionsObjType = {
+    blogId?: string
+    postId?: string
     pageNumber: number
     pageSize: number
     skip: number
@@ -46,7 +47,7 @@ export class PostsService {
                             sortBy: keyof IPost,
                             sortDirection: string): Promise<IReturnedFindObj<IPost>> {
         const skip = (pageNumber - 1) * pageSize
-        const findConditionsObj: FindConditionsBlogsObjType = {
+        const findConditionsObj: FindConditionsObjType = {
             blogId,
             pageNumber,
             pageSize,

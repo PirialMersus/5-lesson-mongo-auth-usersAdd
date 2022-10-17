@@ -1,6 +1,6 @@
 import {postsCollection} from "./db";
 import {BlogsRepository, IReturnedFindObj} from "./blogs-repository";
-import {FindConditionsBlogsObjType, FindConditionsPostsObjType} from "../domain/posts-service";
+import {FindConditionsObjType, FindConditionsPostsObjType} from "../domain/posts-service";
 import {injectable} from "inversify";
 import {IBlog, IPost} from "../types/types";
 
@@ -39,7 +39,7 @@ export class PostsRepository {
         }
     }
 
-    async findPostsByBlogId({blogId, pageNumber, pageSize, skip}: FindConditionsBlogsObjType,
+    async findPostsByBlogId({blogId, pageNumber, pageSize, skip}: FindConditionsObjType,
                             sortBy: keyof IPost,
                             sortDirection: string): Promise<IReturnedFindObj<IPost>> {
         const count = await postsCollection.find({blogId}).count()
