@@ -26,8 +26,9 @@ commentsRouter
         commentsController.updateComment.bind(commentsController)
     )
     .delete('/:id?',
+        bearerAuthMiddleware,
         param('id').not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
-        bearerAuthMiddleware,
+
         commentsController.deleteComment.bind(commentsController)
     )
