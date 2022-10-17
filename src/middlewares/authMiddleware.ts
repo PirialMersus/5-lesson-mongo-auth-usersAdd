@@ -4,6 +4,8 @@ import {container} from "../compositions/composition-root";
 import {UsersService} from "../domain/users-service";
 import {IUser} from "../types/types";
 import {CommentsService} from "../domain/comments-service";
+import jwt from "jsonwebtoken";
+import {settings} from "../settings/settings";
 
 export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // console.log('req.headers.authorization', req.headers.authorization)
@@ -39,10 +41,11 @@ export const bearerAuthMiddleware = async (req: Request, res: Response, next: Ne
 
 
     try {
-        const userId = await jwtService.getUserIdByToken(token)
-
-        const user: IUser | null = await container.resolve(UsersService).findUserByIdAllDataReturn(userId)
+        const result: any = jwt.verify(token, settings.JWT_SECRET)
+        console.log('userId try', result.userId)
+        const user: IUser | null = await container.resolve(UsersService).findUserByIdAllDataReturn(result.userId)
         if (!user) {
+            console.log('я здесь !user')
             res.sendStatus(404)
             return
         }
