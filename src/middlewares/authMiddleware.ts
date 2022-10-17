@@ -29,13 +29,24 @@ export const bearerAuthMiddleware = async (req: Request, res: Response, next: Ne
         res.sendStatus(401)
         return
     }
+    const version = req.headers.authorization.split(' ')[0]
     const token = req.headers.authorization.split(' ')[1]
 
-    const userId = await jwtService.getUserIdByToken(token)
-    if (userId) {
+    if(version !== 'Bearer') {
+        res.sendStatus(401)
+        return
+    }
+
+
+    try {
+        const userId = await jwtService.getUserIdByToken(token)
+        if (!userId) {
+            res.sendStatus(404)
+            return
+        }
         const user: IUser | null = await container.resolve(UsersService).findUserByIdAllDataReturn(userId)
         req.user = user
-    } else {
+    } catch (e) {
         res.sendStatus(401)
         return
     }
