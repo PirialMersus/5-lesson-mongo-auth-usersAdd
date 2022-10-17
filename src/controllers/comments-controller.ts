@@ -11,6 +11,7 @@ export class CommentsController {
 
     async getComment(req: Request, res: Response) {
         const id = req.params.id;
+        console.log('id', id)
         const comment = await this.commentsService.findCommentById(id)
         if (comment) {
             res.status(200).send(comment)
@@ -18,6 +19,7 @@ export class CommentsController {
             res.sendStatus(404)
         }
     }
+
     async updateComment(req: Request, res: Response) {
         // const user: IUser | null = req.user
         const id = req.params.id;
@@ -30,6 +32,7 @@ export class CommentsController {
             res.sendStatus(404)
         }
     }
+
     async deleteComment(req: Request, res: Response) {
         const id = req.params.id;
         const isDeleted = await this.commentsService.deleteComment(id)

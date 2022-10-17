@@ -9,6 +9,7 @@ import {usersRouter} from "./routes/users-router"
 import {commonRepository} from "./repositories/common-repository";
 import {errorObj} from "./middlewares/input-validator-middleware";
 import {authRouter} from "./routes/auth-router";
+import {commentsRouter} from "./routes/comments-router";
 const app = express()
 
 const jsonBodyMiddleware = bodyParser.json()
@@ -25,6 +26,7 @@ app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
 app.use('/auth', authRouter)
+app.use('/comments', commentsRouter)
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     const isAllDeleted = await commonRepository.deleteAll();

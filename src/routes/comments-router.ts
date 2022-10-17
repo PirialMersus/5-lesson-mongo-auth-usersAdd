@@ -10,12 +10,12 @@ export const commentsRouter = Router({})
 
 const commentsController = container.resolve(CommentsController)
 commentsRouter
-    .get('/id?',
+    .get('/:id?',
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
         commentsController.getComment.bind(commentsController)
     )
-    .put('/id?',
+    .put('/:id?',
         bearerAuthMiddleware,
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
         body('content').trim().not().isEmpty().withMessage('enter input value in content field'),
@@ -26,7 +26,7 @@ commentsRouter
         inputValidatorMiddleware,
         commentsController.updateComment.bind(commentsController)
     )
-    .delete('/id?',
+    .delete('/:id?',
         param('id').not().isEmpty().withMessage('enter id value in params'),
         inputValidatorMiddleware,
         bearerAuthMiddleware,
