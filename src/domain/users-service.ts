@@ -34,10 +34,8 @@ export class UsersService {
     }
 
     async findUserByIdAllDataReturn(id: string) {
-        console.log('id', id)
         const user = await this.usersRepository.findUserById(id)
         if (!user) return null
-
         return user
     }
     async findUserByIdSomeDataReturn(id: string) {

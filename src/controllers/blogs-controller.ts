@@ -80,8 +80,8 @@ export class BlogsController {
     async createPostForBlog(req: Request, res: Response) {
         const blogId: string = req.params.blogId
 
-        const isBloggerPresent = await this.blogsService.findBlogById(blogId)
-        if (isBloggerPresent) {
+        const isBlogPresent = await this.blogsService.findBlogById(blogId)
+        if (isBlogPresent) {
             const newPost = await this.postsService.createPost(req.body.title,
                 req.body.shortDescription,
                 req.body.content,

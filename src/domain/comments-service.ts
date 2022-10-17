@@ -32,8 +32,6 @@ export class CommentsService {
 
     async updateComment(id: string, content: string, userId: string | undefined) {
         const comment = await this.commentsRepository.findCommentById(id)
-        console.log('userId', userId)
-        console.log('id', id)
         if (comment?.userId !== userId) return 'notMyOwnComment'
         return this.commentsRepository.updateComment(id, content)
     }
@@ -50,6 +48,8 @@ export class CommentsService {
 
     async deleteComment(id: string, userId: string | undefined): Promise<boolean | 'notMyComment'>{
         const comment = await this.commentsRepository.findCommentById(id)
+        console.log('comment.userId', comment?.userId)
+        console.log('userId', userId)
         if (comment?.userId !== userId) return 'notMyComment'
         return this.commentsRepository.deleteComment(id)
     }
