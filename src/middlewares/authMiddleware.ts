@@ -1,5 +1,4 @@
 import {NextFunction, Request, Response} from "express";
-import {jwtService} from "../application/jwtService";
 import {container} from "../compositions/composition-root";
 import {UsersService} from "../domain/users-service";
 import {IUser} from "../types/types";
@@ -27,18 +26,11 @@ export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunct
 }
 
 export const bearerAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers.authorization || !req.headers) {
+    if (!req.headers.authorization) {
         res.sendStatus(401)
         return
     }
-    const version = req.headers.authorization.split(' ')[0]
     const token = req.headers.authorization.split(' ')[1]
-
-    if (version !== 'Bearer') {
-        res.sendStatus(401)
-        return
-    }
-
 
     try {
         const result: any = jwt.verify(token, settings.JWT_SECRET)
