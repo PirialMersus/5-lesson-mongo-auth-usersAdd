@@ -92,7 +92,7 @@ export class PostsController {
             pageSize,
             serializedCommentsSortBy(sortBy),
             sortDirection)
-        res.status(201).send(response)
+        res.status(200).send(response)
     }
 
     async createCommentForPost(req: Request, res: Response) {
@@ -109,7 +109,7 @@ export class PostsController {
             req.body.content,
             user
         )
-        res.status(200).send(newComment)
+        res.status(201).send(newComment)
     }
 
     async deletePost(req: Request, res: Response) {
