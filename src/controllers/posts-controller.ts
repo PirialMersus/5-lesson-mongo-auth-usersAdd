@@ -111,7 +111,7 @@ export class PostsController {
             req.body.content,
             user
         )
-        res.status(201).send(newComment)
+        res.status(200).send(newComment)
     }
 
     async deletePost(req: Request, res: Response) {

@@ -19,7 +19,6 @@ commentsRouter
         bearerAuthMiddleware,
         param('id').trim().not().isEmpty().withMessage('enter id value in params'),
         body('content').trim().not().isEmpty().withMessage('enter input value in content field'),
-        body('password').trim().not().isEmpty().withMessage('enter input value in password field'),
         body('content').isLength({max: 300, min: 20}).withMessage('content: maxLength: 300 minLength: 20'),
         // body('password').isLength({min: 6, max: 20}).withMessage('password: min: 6, max: 20'),
 

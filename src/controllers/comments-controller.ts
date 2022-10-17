@@ -37,14 +37,15 @@ export class CommentsController {
         const id = req.params.id;
         const isDeleted = await this.commentsService.deleteComment(id)
 
-        if (!isDeleted) {
+        if (isDeleted) {
+            res.sendStatus(204)
+
+        } else {
             errorObj.errorsMessages = [{
                 message: 'Required comment not found',
                 field: 'none',
             }]
             res.status(404).send(errorObj)
-        } else {
-            res.send(204)
         }
 
     }
