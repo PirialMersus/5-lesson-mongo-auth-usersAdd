@@ -100,6 +100,8 @@ export class PostsController {
         const user: IUser | null = req.user
 
         const post = await this.postsService.findPostById(postId)
+        // console.log('post', post)
+        // console.log('user', user)
         if (!post || !user) {
             res.sendStatus(404)
             return
