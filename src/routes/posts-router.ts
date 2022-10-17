@@ -42,8 +42,8 @@ postsRouter.get('/', postsController.getPosts.bind(postsController))
         body('content').trim().not().isEmpty().withMessage('enter input value in content field'),
         body('content').isLength({max: 300, min: 20}).withMessage('content: maxLength: 300 minLength: 20'),
 
-        inputValidatorMiddleware,
         bearerAuthMiddleware,
+        inputValidatorMiddleware,
         postsController.createCommentForPost.bind(postsController))
     .put('/:id?',
         basicAuthMiddleware,
