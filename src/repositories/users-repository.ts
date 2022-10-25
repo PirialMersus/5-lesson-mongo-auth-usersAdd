@@ -56,10 +56,8 @@ export class UsersRepository {
     }
 
     async deleteUser(id: string): Promise<boolean> {
-        await UsersModel.deleteOne({id}, (err: any, d: { deletedCount: 1 | 0 }) => {
-            if (err || d.deletedCount !== 1) return false
-        })
-        return true
+        const result: { deletedCount: number } = await UsersModel.deleteOne({id})
+        return result.deletedCount === 1
     }
 
     async findUser(login: string): Promise<IUser | null> {
