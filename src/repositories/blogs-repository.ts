@@ -16,7 +16,7 @@ export class BlogsRepository {
     async findBlogs({name, pageNumber, pageSize, skip}: IFindObj,
                     sortBy: keyof IBlog,
                     sortDirection: string): Promise<IReturnedFindObj<IBlog>> {
-        const findObject: { name } = {}
+        const findObject: { name: { $regex?: RegExp } } = {}
         if (name) findObject.name = {$regex: new RegExp(name, "i")}
         const count = await BlogsModel.countDocuments(findObject)
         const foundBloggers: IBlog[] = await BlogsModel
