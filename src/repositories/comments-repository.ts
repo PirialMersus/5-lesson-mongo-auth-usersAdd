@@ -8,7 +8,7 @@ import {CommentsModel} from "./db";
 @injectable()
 export class CommentsRepository {
     async findCommentById(id: string): Promise<IComment | null> {
-        let comment = CommentsModel.findOne({id}, {projection: {_id: 0, postId: 0},})
+        let comment = CommentsModel.findOne({id}).select({_id: 0, __v: 0, postId: 0})
         if (comment) {
             return comment
         } else {
@@ -21,7 +21,8 @@ export class CommentsRepository {
                                sortDirection: string): Promise<IReturnedFindObj<IComment>> {
         const count = await CommentsModel.find({postId}).count()
         const foundComments: WithId<IComment>[] = await CommentsModel
-            .find({postId}, {projection: {_id: false, postId: 0}})
+            .find({postId})
+            .select({_id: 0, __v: 0, postId: 0})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
@@ -39,7 +40,7 @@ export class CommentsRepository {
 
     async createComment(comment: IComment): Promise<IComment | null> {
         await CommentsModel.insertMany([comment])
-        return CommentsModel.findOne({id: comment.id}, {projection: {_id: 0, postId: 0}})
+        return CommentsModel.findOne({id: comment.id}).select({_id: 0, __v: 0, postId: 0})
     }
 
     async updateComment(id: string, content: string): Promise<boolean> {

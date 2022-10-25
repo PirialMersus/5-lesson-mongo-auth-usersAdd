@@ -22,15 +22,8 @@ export class UsersRepository {
         }
         const count = await UsersModel.find(findObject).count()
         const foundUsers: WithId<IUser>[] = await UsersModel
-            .find(findObject,
-                {
-
-                    projection: {
-                        _id: false,
-                        passwordSalt: false,
-                        passwordHash: false
-                    }
-                })
+            .find(findObject)
+            .select({_id: 0, __v: 0, passwordSalt: 0, passwordHash: 0})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
@@ -46,8 +39,9 @@ export class UsersRepository {
             })
         })
     }
+
     async findUserById(id: string): Promise<IUser | null> {
-        let user = UsersModel.findOne({id}, {projection: {_id: 0}})
+        let user = UsersModel.findOne({id}).select({_id: 0, __v: 0})
         if (user) {
             return user
         } else {
@@ -57,17 +51,12 @@ export class UsersRepository {
 
     async createUser(newUser: IUser): Promise<IUser | null> {
         await UsersModel.insertMany([newUser])
-        return UsersModel.findOne({_id: newUser._id}, {
-            projection: {
-                _id: false,
-                passwordSalt: false,
-                passwordHash: false
-            }
-        })
+        return UsersModel.findOne({_id: newUser._id})
+            .select({_id: 0, __v: 0, postId: 0, passwordSalt: 0, passwordHash: 0,})
     }
 
     async deleteUser(id: string): Promise<boolean> {
-        await UsersModel.deleteOne({id}, (err: any, d: {deletedCount: 1 | 0}) => {
+        await UsersModel.deleteOne({id}, (err: any, d: { deletedCount: 1 | 0 }) => {
             if (err || d.deletedCount !== 1) return false
         })
         return true

@@ -20,7 +20,8 @@ export class BlogsRepository {
         if (name) findObject.name = {$regex: new RegExp(name, "i")}
         const count = await BlogsModel.countDocuments(findObject)
         const foundBloggers: IBlog[] = await BlogsModel
-            .find(findObject, {projection: {_id: false}})
+            .find(findObject)
+            .select({_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
@@ -37,7 +38,7 @@ export class BlogsRepository {
     }
 
     async findBlogById(id: string): Promise<IBlog | null> {
-        const blog = BlogsModel.findOne({id}, {projection: {_id: 0}})
+        const blog = BlogsModel.findOne({id}).select({_id: 0, __v: 0})
         if (blog) {
             return blog
         } else {
@@ -45,20 +46,20 @@ export class BlogsRepository {
         }
     }
 
-    async createBlogger(newBlog: IBlog): Promise<IBlog | null> {
+    async createBlog(newBlog: IBlog): Promise<IBlog | null> {
         await BlogsModel.insertMany([newBlog])
-        return BlogsModel.findOne({id: newBlog.id}, {projection: {_id: 0}})
+        return BlogsModel.findOne({id: newBlog.id}).select({_id: 0, __v: 0})
     }
 
     async updateBlog(id: string, name: string, youtubeUrl: string): Promise<boolean> {
-        let result: {matchedCount: number} = await BlogsModel.updateOne({id}, {
+        let result: { matchedCount: number } = await BlogsModel.updateOne({id}, {
             $set: {name, youtubeUrl}
         })
         return result.matchedCount === 1
     }
 
     async deleteBlog(id: string): Promise<boolean> {
-        const result: {deletedCount: number} = await BlogsModel.deleteOne({id})
+        const result: { deletedCount: number } = await BlogsModel.deleteOne({id})
         return result.deletedCount === 1
     }
 

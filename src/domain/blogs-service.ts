@@ -39,7 +39,7 @@ export class BlogsService {
         const date = new Date()
         const newBlog: Blog = new Blog(name, youtubeUrl, date)
 
-        return this.blogsRepository.createBlogger(newBlog)
+        return this.blogsRepository.createBlog(newBlog)
     }
 
     async updateBlogger(id: string, name: string, youtubeUrl: string): Promise<boolean> {

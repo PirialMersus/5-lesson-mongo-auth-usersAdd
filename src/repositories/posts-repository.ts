@@ -1,4 +1,3 @@
-// import {postsCollection} from "./db";
 import {BlogsRepository, IReturnedFindObj} from "./blogs-repository";
 import {FindConditionsObjType, FindConditionsPostsObjType} from "../domain/posts-service";
 import {injectable} from "inversify";
@@ -9,12 +8,14 @@ import {PostsModel} from "./db";
 export class PostsRepository {
     constructor(private readonly blogsRepository: BlogsRepository) {
     }
+
     async findPosts({pageNumber, pageSize, skip}: FindConditionsPostsObjType,
                     sortBy: keyof IPost,
                     sortDirection: string): Promise<IReturnedFindObj<IPost>> {
         const count = await PostsModel.find({}).count()
         const foundPosts: IPost[] = await PostsModel
-            .find({}, {projection: {_id: false}})
+            .find({})
+            .select({_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
@@ -32,7 +33,7 @@ export class PostsRepository {
     }
 
     async findPostById(id: string): Promise<IPost | null> {
-        let post = PostsModel.findOne({id}, {projection: {_id: 0}})
+        let post = PostsModel.findOne({id}).select({_id: 0, __v: 0})
         if (post) {
             return post
         } else {
@@ -45,7 +46,8 @@ export class PostsRepository {
                             sortDirection: string): Promise<IReturnedFindObj<IPost>> {
         const count = await PostsModel.find({blogId}).count()
         const foundPosts: IPost[] = await PostsModel
-            .find({blogId}, {projection: {_id: false}})
+            .find({blogId})
+            .select({_id: 0, __v: 0})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
@@ -64,7 +66,7 @@ export class PostsRepository {
     // have to have return value type
     async createPost(newPost: IPost): Promise<IPost | null> {
         await PostsModel.insertMany([newPost])
-        return PostsModel.findOne({id: newPost.id}, {projection: {_id: 0}})
+        return PostsModel.findOne({id: newPost.id}).select({_id: 0, __v: 0})
     }
 
     async updatePost(id: string,
@@ -73,7 +75,7 @@ export class PostsRepository {
                      content: string,
                      blogId: string): Promise<boolean> {
         const blogger: IBlog | null = await this.blogsRepository.findBlogById(blogId)
-        let result: {matchedCount: number} = await PostsModel.updateOne({id}, {
+        let result: { matchedCount: number } = await PostsModel.updateOne({id}, {
             $set: {
                 title,
                 shortDescription,
