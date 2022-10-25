@@ -13,10 +13,6 @@ import {CommentsController} from "../controllers/comments-controller";
 import {CommentsService} from "../domain/comments-service";
 import {CommentsRepository} from "../repositories/comments-repository";
 
-// const blogsRepository = new BlogsRepository()
-// export const blogsService = new BlogsService(blogsRepository)
-// export const blogsController = new BlogsController(blogsService)
-
 export const container = new Container();
 container.bind(BlogsController).to(BlogsController);
 container.bind(BlogsService).to(BlogsService);

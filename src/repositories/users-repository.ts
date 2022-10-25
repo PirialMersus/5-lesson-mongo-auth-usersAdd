@@ -1,4 +1,4 @@
-import {usersCollection} from "./db";
+import {UsersModel} from "./db";
 import {FindConditionsPostsObjType} from "../domain/posts-service";
 import {IReturnedFindObj} from "./blogs-repository";
 import {WithId} from "mongodb";
@@ -20,10 +20,11 @@ export class UsersRepository {
                 }
             }, {email: {$regex: searchEmailTerm || '', $options: "(?i)a(?-i)cme"}}]
         }
-        const count = await usersCollection.find(findObject).count()
-        const foundUsers: WithId<IUser>[] = await usersCollection
+        const count = await UsersModel.find(findObject).count()
+        const foundUsers: WithId<IUser>[] = await UsersModel
             .find(findObject,
                 {
+
                     projection: {
                         _id: false,
                         passwordSalt: false,
@@ -33,7 +34,7 @@ export class UsersRepository {
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
-            .toArray()
+            .lean()
 
         return new Promise((resolve) => {
             resolve({
@@ -46,7 +47,7 @@ export class UsersRepository {
         })
     }
     async findUserById(id: string): Promise<IUser | null> {
-        let user = usersCollection.findOne({id}, {projection: {_id: 0}})
+        let user = UsersModel.findOne({id}, {projection: {_id: 0}})
         if (user) {
             return user
         } else {
@@ -55,8 +56,8 @@ export class UsersRepository {
     }
 
     async createUser(newUser: IUser): Promise<IUser | null> {
-        await usersCollection.insertOne(newUser)
-        return usersCollection.findOne({_id: newUser._id}, {
+        await UsersModel.insertMany([newUser])
+        return UsersModel.findOne({_id: newUser._id}, {
             projection: {
                 _id: false,
                 passwordSalt: false,
@@ -66,12 +67,14 @@ export class UsersRepository {
     }
 
     async deleteUser(id: string): Promise<boolean> {
-        const result = await usersCollection.deleteOne({id})
-        return result.deletedCount === 1
+        await UsersModel.deleteOne({id}, (err: any, d: {deletedCount: 1 | 0}) => {
+            if (err || d.deletedCount !== 1) return false
+        })
+        return true
     }
 
     async findUser(login: string): Promise<IUser | null> {
-        return usersCollection.findOne({login: login})
+        return UsersModel.findOne({login: login})
     }
 }
 

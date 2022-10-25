@@ -41,7 +41,6 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
     }
 })
 
-
 const startApp = async () => {
     await runDb()
     app.listen(port, () => {

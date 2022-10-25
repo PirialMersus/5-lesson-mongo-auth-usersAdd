@@ -1,15 +1,15 @@
-import {blogsCollection, postsCollection, usersCollection} from "./db";
+import {BlogsModel, PostsModel, UsersModel} from "./db";
 
 
 export const commonRepository = {
     async deleteAll(): Promise<boolean> {
-        const resultBlogs = await blogsCollection.deleteMany({})
-        const resultPosts = await postsCollection.deleteMany({})
-        const resultUsers = await usersCollection.deleteMany({})
+        const resultBlogs: { deletedCount: number } = await BlogsModel.deleteMany({})
+        const resultPosts: { deletedCount: number } = await PostsModel.deleteMany({})
+        const resultUsers: { deletedCount: number } = await UsersModel.deleteMany({})
         // const resultPosts = await postsCollection.deleteMany({})
-        return resultBlogs.acknowledged
-            && resultPosts.acknowledged
-            && resultUsers.acknowledged
+        return resultBlogs.deletedCount >= 0
+            && resultPosts.deletedCount >= 0
+            && resultUsers.deletedCount >= 0
     },
 }
 

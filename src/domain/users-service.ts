@@ -54,7 +54,6 @@ export class UsersService {
         const passwordHash = await this._generateHash(password, passwordSalt)
         const date = new Date()
         const newUser: User = new User(login, email, passwordSalt, passwordHash, date)
-
         return this.usersRepository.createUser(newUser)
     }
 

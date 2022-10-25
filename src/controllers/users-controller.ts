@@ -64,7 +64,7 @@ export class UsersController {
             }]
             res.status(404).send(errorObj.errorsMessages[0].message)
         } else {
-            res.send(204)
+            res.sendStatus(204)
         }
     }
 }

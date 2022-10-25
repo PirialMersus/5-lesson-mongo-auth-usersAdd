@@ -1,6 +1,5 @@
-import {blogsCollection} from "./db";
+import {BlogsModel} from "./db";
 import {IFindObj} from "../domain/blogs-service";
-import {Filter} from "mongodb";
 import {injectable} from "inversify";
 import {IBlog} from "../types/types";
 
@@ -17,15 +16,15 @@ export class BlogsRepository {
     async findBlogs({name, pageNumber, pageSize, skip}: IFindObj,
                     sortBy: keyof IBlog,
                     sortDirection: string): Promise<IReturnedFindObj<IBlog>> {
-        const findObject: Filter<IBlog> = {}
+        const findObject: { name } = {}
         if (name) findObject.name = {$regex: new RegExp(name, "i")}
-        const count = await blogsCollection.countDocuments(findObject)
-        const foundBloggers: IBlog[] = await blogsCollection
+        const count = await BlogsModel.countDocuments(findObject)
+        const foundBloggers: IBlog[] = await BlogsModel
             .find(findObject, {projection: {_id: false}})
             .sort({[sortBy]: sortDirection === 'desc' ? -1 : 1})
             .skip(skip)
             .limit(pageSize)
-            .toArray()
+            .lean()
         return new Promise((resolve) => {
             resolve({
                 pagesCount: Math.ceil(count / pageSize),
@@ -38,7 +37,7 @@ export class BlogsRepository {
     }
 
     async findBlogById(id: string): Promise<IBlog | null> {
-        const blog = blogsCollection.findOne({id}, {projection: {_id: 0}})
+        const blog = BlogsModel.findOne({id}, {projection: {_id: 0}})
         if (blog) {
             return blog
         } else {
@@ -47,19 +46,19 @@ export class BlogsRepository {
     }
 
     async createBlogger(newBlog: IBlog): Promise<IBlog | null> {
-        await blogsCollection.insertOne(newBlog)
-        return blogsCollection.findOne({id: newBlog.id}, {projection: {_id: 0}})
+        await BlogsModel.insertMany([newBlog])
+        return BlogsModel.findOne({id: newBlog.id}, {projection: {_id: 0}})
     }
 
     async updateBlog(id: string, name: string, youtubeUrl: string): Promise<boolean> {
-        let result = await blogsCollection.updateOne({id}, {
+        let result: {matchedCount: number} = await BlogsModel.updateOne({id}, {
             $set: {name, youtubeUrl}
         })
         return result.matchedCount === 1
     }
 
     async deleteBlog(id: string): Promise<boolean> {
-        const result = await blogsCollection.deleteOne({id})
+        const result: {deletedCount: number} = await BlogsModel.deleteOne({id})
         return result.deletedCount === 1
     }
 
