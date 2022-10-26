@@ -59,13 +59,12 @@ export class PostsService {
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<IPost | null> {
         const blog = await this.blogsRepository.findBlogById(blogId)
         const date = new Date()
-        const newPost: IPost = new Post(title,
+        const newPost: IPost = Post.create(title,
             shortDescription,
             content,
             blogId,
             blog?.name,
             date);
-
         return this.postsRepository.createPost(newPost)
     }
 

@@ -37,7 +37,7 @@ export class BlogsService {
 
     async createBlog(name: string, youtubeUrl: string): Promise<IBlog | null> {
         const date = new Date()
-        const newBlog: Blog = new Blog(name, youtubeUrl, date)
+        const newBlog: Blog = Blog.create(name, youtubeUrl, date)
 
         return this.blogsRepository.createBlog(newBlog)
     }

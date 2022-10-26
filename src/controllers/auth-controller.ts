@@ -9,7 +9,7 @@ export class AuthController {
     constructor(protected usersService: UsersService) {
     }
 
-    async checkCredentials(req: Request, res: Response) {
+     checkCredentials = async (req: Request, res: Response) => {
         const user = await this.usersService.checkCredentials(req.body.login, req.body.password)
 
         if (user) {
@@ -26,18 +26,18 @@ export class AuthController {
         }
     }
 
-    async getUserInformation(req: Request, res: Response) {
-        const user = await this.usersService.checkCredentials(req.body.login, req.body.password)
-
-        if (user) {
-            const token = await jwtService.createJWT(user)
-            res.status(200).send(user)
-        } else {
-            errorObj.errorsMessages = [{
-                message: 'Cant login this user',
-                field: 'none',
-            }]
-            res.status(401).send(errorObj.errorsMessages[0].message)
-        }
-    }
+    // async getUserInformation(req: Request, res: Response) {
+    //     const user = await this.usersService.checkCredentials(req.body.login, req.body.password)
+    //
+    //     if (user) {
+    //         const token = await jwtService.createJWT(user)
+    //         res.status(200).send(user)
+    //     } else {
+    //         errorObj.errorsMessages = [{
+    //             message: 'Cant login this user',
+    //             field: 'none',
+    //         }]
+    //         res.status(401).send(errorObj.errorsMessages[0].message)
+    //     }
+    // }
 }

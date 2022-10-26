@@ -2,53 +2,75 @@ import {MongoClient, ObjectId} from 'mongodb'
 import {IBlog, IComment, IPassword, IPost, IUser} from "../types/types";
 import mongoose from "mongoose";
 
-export class Blog {
+
+export class Blog implements IBlog {
     createdAt: string
     id: string
-    static date: Date
 
-    constructor(public name: string,
-                public youtubeUrl: string,
-                date: Date) {
+    private constructor(public name: string, public youtubeUrl: string, date: Date) {
         this.createdAt = date.toISOString()
-        this.id = (+date).toString()
+        this.id = Math.random().toString(16)
+    }
+
+    static create = (name: string, youtubeUrl: string, date: Date) => {
+        return new Blog(name, youtubeUrl, date)
     }
 }
 
-export class Comment {
+export class Comment implements IComment {
     createdAt: string
     id: string
     _id: ObjectId
-    static date: Date
 
-    constructor(public content: string,
-                public userId: string,
-                public userLogin: string,
-                public postId: string,
-                date: Date) {
+    private constructor(public content: string,
+                        public userId: string,
+                        public userLogin: string,
+                        public postId: string,
+                        date: Date) {
         this.createdAt = date.toISOString()
         this.id = (+date).toString()
         this._id = new ObjectId()
     }
+
+    static create = (content: string,
+                     userId: string,
+                     userLogin: string,
+                     postId: string,
+                     date: Date) => {
+        return new Comment(content, userId, userLogin, postId, date)
+    }
 }
 
 
-export class Post {
+export class Post implements IPost {
     createdAt: string
     id: string
     blogName: string
     static date: Date
-    static possibleBlogName: string | undefined
 
-    constructor(public title: string,
-                public shortDescription: string,
-                public content: string,
-                public blogId: string,
-                possibleBlogName: string | undefined,
-                date: Date) {
+    private constructor(public title: string,
+                        public shortDescription: string,
+                        public content: string,
+                        public blogId: string,
+                        possibleBlogName: string | undefined,
+                        date: Date) {
         this.createdAt = date.toISOString()
         this.id = (+date).toString()
         this.blogName = possibleBlogName ? possibleBlogName : ''
+    }
+
+    static create = (title: string,
+                     shortDescription: string,
+                     content: string,
+                     blogId: string,
+                     possibleBlogName: string | undefined,
+                     date: Date) => {
+        return new Post(title,
+            shortDescription,
+            content,
+            blogId,
+            possibleBlogName,
+            date)
     }
 }
 
@@ -70,13 +92,12 @@ export class User {
 }
 
 
-
 export interface IPasswordObjectType {
     userId: number,
     passwords: IPassword[]
 }
 
-const dbName = 'blogsPostsUsers';
+// const dbName = 'blogsPostsUsers';
 const uri = "mongodb+srv://mersus:genafe@bloggers.ypwqb.mongodb.net/blogsPostsUsers?retryWrites=true&w=majority";
 
 export const client = new MongoClient(uri);
@@ -132,7 +153,7 @@ export async function runDb() {
         // await client.connect();
         // Establish and verify connection
 
-        const dataBaseUriFinal = uri + '/' + dbName;
+        // const dataBaseUriFinal = uri + '/' + dbName;
         await mongoose.connect(uri);
 
         // await client.db("blogsPostsUsers").command({ping: 1});

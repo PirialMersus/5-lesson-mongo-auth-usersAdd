@@ -18,7 +18,7 @@ authRouter
         // body('password').isLength({min: 6, max: 20}).withMessage('password: min: 6, max: 20'),
 
         // inputValidatorMiddleware,
-        authController.checkCredentials.bind(authController)
+        authController.checkCredentials
     )
     .get('/me',
         // authMiddleware,

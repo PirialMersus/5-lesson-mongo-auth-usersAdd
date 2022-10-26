@@ -38,7 +38,7 @@ export class CommentsService {
 
     async createComment(post: IPost, content: string, user: IUser): Promise<IComment | null> {
         const date = new Date()
-        const newComment: IComment = new Comment(content,
+        const newComment: IComment = Comment.create(content,
             user.id,
             user.login,
             post.id,
