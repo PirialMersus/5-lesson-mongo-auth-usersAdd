@@ -10,6 +10,7 @@ import {commonRepository} from "./repositories/common-repository";
 import {errorObj} from "./middlewares/input-validator-middleware";
 import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
+import {emailRouter} from "./routes/email-router";
 const app = express()
 
 const jsonBodyMiddleware = bodyParser.json()
@@ -23,6 +24,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use('/blogs', blogsRouter)
+app.use('/email', emailRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
 app.use('/auth', authRouter)
